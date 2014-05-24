@@ -1,0 +1,9 @@
+# coding: utf8
+from enum import Enum
+
+class TypeDossierEnum(Enum):
+    BROUILLON = 1
+    SOUMIS = 2
+    SUSPENDU = 3
+    ACCEPTE = 4
+    REFUSE = 5

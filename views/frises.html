@@ -1,0 +1,124 @@
+{{if rowDossier is not None:}}
+    <div class="titreGestion">Etat du dossier</div>
+    
+    <div class="crumbs">
+        <ul>
+            <li><span {{if rowDossier.etat_dossier_id == Constantes.BROUILLON: }}class="currentCase"{{pass}}>Brouillon</span></li>
+            <li><span {{if rowDossier.etat_dossier_id == Constantes.SOUMIS: }}class="currentCase"{{pass}}>Soumis</span></li>
+            <li><span {{if rowDossier.etat_dossier_id == Constantes.ATTENTE: }}class="currentCase"{{pass}}>En attente</span></li>
+            <li><span {{if rowDossier.etat_dossier_id == Constantes.REFUSE: }}class="currentCase"{{pass}}>Refusé</span></li>
+            <li><span {{if rowDossier.etat_dossier_id == Constantes.ACCEPTE: }}class="currentCase"{{pass}}>Accepté</span></li>
+        </ul>
+    </div>
+
+    {{if detailsProjetView == True:}}
+           {{if isPresident or isRepresentant:}}
+                <div class="gestionDossierDetail">
+                    {{=formAdmin}}
+                </div>
+           {{pass}}
+        
+        {{if isDemandeur and (not isRepresentant and not isPresident ):}}
+        <div class="center">
+            <div class="titreCommentaire"> Commentaires : </div>
+            <div class="commentaire">
+                    {{=rowDossier.commentaire}}
+            </div>
+        </div>
+        {{pass}}
+    {{pass}}
+        
+{{pass}}
+    
+    <div class="titreGestion">
+       {{if detailsProjetView == True:}}
+            {{if initDossier == True:}}Création d'un dossier{{else:}}Détails du dossier{{pass}}
+        {{pass}}
+        
+       {{if gestionProduitsView == True:}}
+            Gestion des produits
+        {{pass}}
+        
+        {{if gestionPJsView == True:}}
+            Gestion des pièces jointes
+        {{pass}}
+        
+        {{if finalDemandeView == True:}}
+            Fin de la saisie de la demande
+        {{pass}}
+
+    </div>
+
+
+
+    <div class="crumbs">
+        <ul>
+            <li><span>
+                {{if rowDossier is not None:}}
+                <a {{if detailsProjetView == True:}}class="currentCase" {{pass}} href="../projet/addProjet?idDossier={{=request.vars.idDossier}}">
+                
+                        
+                        {{if initDossier == True:}}
+                            Saisie de la demande
+                        {{else:}}
+                            Informations de la demande
+                        {{pass}}
+                  {{pass}}
+                    
+                 {{if rowDossier is not None:}}
+                 </a>
+                 {{pass}}
+                {{if rowDossier is None:}}
+                <a style="text-decoration:none;" class="currentCase">Saisie de la demande</a>
+                {{pass}}
+             </span></li>
+            
+            <li><span>
+                {{if rowDossier is not None:}}
+                <a {{if gestionProduitsView == True:}}class="currentCase" {{pass}} href="../achat/gestionProduits?idDossier={{=request.vars.idDossier}}">
+                {{pass}}       
+                        
+                    {{if initDossier == True:}}
+                        Ajout de produits
+                    {{else:}}
+                        Produits
+                    {{pass}}
+                        
+                {{if rowDossier is not None:}}        
+                </a>
+                {{pass}}
+             </span></li>
+            
+            <li><span>
+                
+                {{if rowDossier is not None:}}
+                <a {{if gestionPJsView == True:}}class="currentCase" {{pass}} href="../document/gestionPjs?idDossier={{=request.vars.idDossier}}">
+                {{pass}}
+                    
+                    {{if initDossier == True:}}
+                        Ajout de documents
+                    {{else:}}
+                        Documents
+                    {{pass}}
+                        
+                {{if rowDossier is not None:}}        
+                    </a>
+                {{pass}}
+            </span></li>
+            
+            {{if initDossier == True:}}
+                <li><span>
+                    
+                    {{if rowDossier is not None:}}
+                    <a {{if finalDemandeView == True:}}class="currentCase" {{pass}} href="../projet/finalisationDemande?idDossier={{=request.vars.idDossier}}">
+                    {{pass}}
+                            Finalisation de la demande
+                            
+                    {{if rowDossier is not None:}}
+                        </a>
+                    {{pass}}
+                    
+                 </span></li>
+            {{pass}}
+        </ul>
+    </div>

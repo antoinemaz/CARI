@@ -1,0 +1,21 @@
+{{extend 'layout.html'}}
+<div class="gestion">
+    
+  {{include 'projet/frises.html'}}
+
+    <div class="center" id="dossierOk">
+        {{ if changeState == False:}}
+        <div>
+             Votre demande est enregistrée en tant que brouillon. Vous pouvez la modifier à tout moment.
+             {{=form}}
+        </div>
+        {{else:}}
+        <div>
+            Votre dossier a bien été soumis, Il est en cours de traitement
+        </div>
+        {{pass}}
+    </div>
+    
+    <!-- LIEN DE RETOUR VERS LA PAGE DE GESTION DES COMPOSANTES -->
+   {{=A('Retour',_href=URL('document', 'gestionPjs',vars=dict(idDossier=request.vars.idDossier)),cid=request.cid, _class='linkAction bloc')}}
+</div>

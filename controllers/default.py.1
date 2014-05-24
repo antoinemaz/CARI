@@ -1,0 +1,54 @@
+@auth.requires_login()
+def index():
+    return dict()
+
+def user():
+    return dict(form=auth())
+
+def profile():
+    return dict()
+
+@auth.requires_membership('President')
+def gestionsComptes():
+    return dict()
+
+def gestionUsers():
+    readonlyUser(True, True)
+    db.auth_user.id.readable = False
+    gridUser = SQLFORM.grid(db.auth_user, searchable=False, csv=False, ui="jquery-ui", links_in_grid=False, onupdate=myonupdate2, formname="formUsers", create=False )
+    return dict(gridUsers=gridUser)
+
+def gestionComposantes():
+    db.composante.id.readable = False
+    gridComposante = SQLFORM.grid(db.composante, searchable=False, csv=False, ui="jquery-ui", links_in_grid=False, details=False, onupdate=myonupdate, formname="formComp", create=False)
+    return dict(gridComposantes=gridComposante)
+
+def myonupdate(form):
+    redirect(URL('gestionComposantes'))
+    print 'update!'
+
+def myonupdate2(form):
+    
+    db(db.auth_membership.user_id == form.vars.id).update(group_id=form.vars.group_id)
+    
+    redirect(URL('gestionUsers'))
+    print 'update!'
+
+def ajoutUser():
+    
+   readonlyUser(True, True)
+        
+   form = SQLFORM(db.auth_user)
+    
+   if form.process().accepted:
+       response.flash = 'form accepted'
+        
+       db.auth_membership.insert(user_id = form.vars.id, group_id = form.vars.group_id)
+       redirect(URL('gestionsComptes'))
+        
+   elif form.errors:
+       response.flash = 'form has errors'
+   else:
+       response.flash = 'please fill out the form'
+
+   return locals()

@@ -1,0 +1,11 @@
+# coding: utf8
+class Constantes(object):
+    BROUILLON = 1
+    SOUMIS = 2
+    ATTENTE = 3
+    ACCEPTE = 4
+    REFUSE = 5
+
+    PRESIDENT = 1
+    UTILISATEUR = 2
+    REPRESENTANT = 3

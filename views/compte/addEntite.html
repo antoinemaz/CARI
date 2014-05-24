@@ -1,0 +1,7 @@
+{{extend 'layout.html'}}
+<div class="gestion">
+    <div class="titreGestion">Ajout d'une entité</div>
+    <!-- LIEN DE RETOUR VERS LA PAGE DE GESTION DES COMPOSANTES -->
+    {{=A('Retour',_href=URL('gestionEntites'),cid=request.cid, _class='linkAction bloc')}}
+    {{=form}}
+</div>

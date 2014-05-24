@@ -1,0 +1,7 @@
+# coding: utf8
+class userService(object):
+
+    @staticmethod
+    def getInfosUser(unid):
+         rows = db.auth_user[unid]
+         return rows

@@ -1,0 +1,4 @@
+{{extend 'layout.html'}}
+    <div class="titreGestion">Gestion des utilisateurs</div>
+    <ul class="addButton"><li>{{=A('Ajouter un utilisateur',_href=URL('compte','addUser'),cid=request.cid, _class='linkAction inline')}}</li></ul>
+{{=gridUsers}}

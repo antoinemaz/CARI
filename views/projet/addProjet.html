@@ -1,0 +1,168 @@
+{{extend 'layout.html'}}
+
+<script>
+    afficherChamps('#no_table_urgent','.urg')
+    afficherChamps('#no_table_remplacement_materiel','.rempl')
+</script>
+
+<div class="gestion">
+    
+    {{include 'frises.html'}}
+    
+{{if user != None:}}
+    <div class="formStyle divInfoUser">
+        <div class="center divTitre">Informations du demandeur</div>
+        <table>
+            <tr>
+                <td class="bleu">Nom</td>
+                <td>{{=user.last_name}}</td>
+            </tr>
+           <tr>
+                <td class="bleu">Prénom</td>
+                <td>{{=user.first_name}}</td>
+            </tr>
+            <tr>
+                <td class="bleu">Email</td>
+                <td>{{=user.email}}</td>
+            </tr>
+           <tr>
+                <td class="bleu">Role</td>
+                <td>{{=nameOfGroupUser}}</td>
+            </tr>
+            <tr>
+                <td class="bleu">Entité</td>
+                <td>{{=nameOfEntityUser}}</td>
+            </tr>            
+        </table>
+    </div>
+{{pass}}
+    
+    {{if isPresident or isRepresentant:}}
+        <div class="center">
+            {{if  initDossier == False:}}
+                {{if request.vars.editMode == 'True':}}
+                    {{=A('Passer en mode visualisation', _class='styleBouton', _href=URL('addProjet', vars=dict(idDossier=request.vars.idDossier)), cid=request.cid)}}
+                {{else:}}
+                    {{=A('Passer en mode édition',_class='styleBouton',  _href=URL('addProjet', vars=dict(idDossier=request.vars.idDossier,editMode=True)), cid=request.cid)}}
+                {{pass}}
+            {{pass}}
+        </div>
+    {{pass}}
+        
+    {{=form.custom.begin}}
+        
+    <table>
+        {{if form.vars.id is not None:}}
+         <tr>
+            <td class="bleu">Numéro du dossier</td>
+            <td>{{=form.vars.id}}</td>
+        </tr>
+        {{pass}}
+        <tr>
+            <td class="bleu">{{=form.custom.label.intitule}}</td>
+            <td>{{if lecture == False:}} {{=form.custom.widget.intitule}} {{else:}} {{=form.vars.intitule}}{{pass}}</td>
+        </tr>
+         <tr>
+            <td class="bleu">Porteur</td>
+             <td>
+                 <table>
+                     <!--<tr><td></td><td class="checkPorteur">{{=INPUT(_type='checkbox', _name='porteur', value=False)}} Je suis le porteur </td></tr> -->
+                     <tr>
+                         <td class="bleu">{{=form.custom.label.nom}}</td>
+                         <td>{{if lecture == False:}}{{=form.custom.widget.nom}} {{else:}} {{=form.vars.nom}}{{pass}}</td>
+                     </tr>
+                     <tr>
+                         <td class="bleu">{{=form.custom.label.prenom}}</td>
+                         <td>{{if lecture == False:}}{{=form.custom.widget.prenom}} {{else:}} {{=form.vars.prenom}}{{pass}}</td>
+                     </tr>
+                     <tr>
+                         <td class="bleu">{{=form.custom.label.mail}}</td>
+                         <td>{{if lecture == False:}}{{=form.custom.widget.mail}} {{else:}} {{=form.vars.mail}}{{pass}}</td>
+                     </tr>
+                     <tr><td class="bleu">{{=form.custom.label.entite_id}}</td>
+                         <td>{{if lecture == False:}}{{=form.custom.widget.entite_id}} {{else:}} {{=entite}}{{pass}}</td>
+                     </tr>
+                 </table>
+
+             </td>
+        </tr>
+         <tr>
+            <td class="bleu">{{=form.custom.label.mailResponsable}}</td>
+            <td> {{if lecture == False:}} {{=form.custom.widget.mailResponsable}}{{else:}} {{=form.vars.mailResponsable}}{{pass}}
+             </td>
+        </tr>        
+        <tr>
+            <td class="bleu">{{=form.custom.label.mailGestionnaire}}</td>
+            <td> {{if lecture == False:}} {{=form.custom.widget.mailGestionnaire}}{{else:}} {{=form.vars.mailGestionnaire}}{{pass}}
+             </td>
+        </tr>
+         <tr>
+            <td class="bleu">{{=form.custom.label.urgent}}</td>
+            <td>{{if lecture == False:}}
+                    {{=form.custom.widget.urgent}}
+                {{else:}}
+                {{checkUrgent = ""}}
+                    {{if form.vars.urgent == True:}}
+                        {{checkUrgent="checked"}}
+                {{pass}}
+                <input id="no_table_urgent" class="boolean" type="checkbox" value="on" name="urgent" disabled="disabled" {{=checkUrgent}} >
+                {{pass}}
+             </td>
+        </tr>
+        <tr>
+            <td class="urg bleu" >{{=form.custom.label.caractere_urgent}}</td>
+            <td class="urg">{{if lecture == False:}} {{=form.custom.widget.caractere_urgent}}{{else:}} {{=form.vars.caractere_urgent}}{{pass}}</td>
+        </tr>
+
+         <tr>
+            <td class="bleu">{{=form.custom.label.remplacement_materiel}}</td>
+            <td>{{if lecture == False:}}
+                    {{=form.custom.widget.remplacement_materiel}}
+                {{else:}}
+                {{checkRemplMat = ""}}
+                    {{if form.vars.remplacement_materiel == True:}}
+                        {{checkRemplMat="checked"}}
+                {{pass}}
+                <input id="no_table_remplacement_materiel" class="boolean" type="checkbox" value="on" name="remplacement_materiel" disabled="disabled" {{=checkRemplMat}} >
+                {{pass}}
+             </td>
+        </tr>
+        
+         <tr>
+               <td class="rempl bleu">{{=form.custom.label.reference_materiel}}</td>
+             <td class="rempl">{{if lecture == False:}}{{=form.custom.widget.reference_materiel}}{{else:}} {{=form.vars.reference_materiel}}{{pass}}</td>
+         </tr>
+         <tr>
+            <td class="bleu">{{=form.custom.label.beneficiaires}}</td>
+            <td>{{if lecture == False:}}{{=form.custom.widget.beneficiaires}}{{else:}} {{=form.vars.beneficiaires}}{{pass}}</td>
+        </tr>
+         <tr>
+            <td class="bleu">{{=form.custom.label.achat_courant}}</td>
+            <td>{{if lecture == False:}}
+                    {{=form.custom.widget.achat_courant}}
+                {{else:}}
+                {{checkAchatCourant = ""}}
+                    {{if form.vars.achat_courant == True:}}
+                        {{checkAchatCourant="checked"}}
+                {{pass}}
+                <input id="no_table_achat_courant" class="boolean" type="checkbox" value="on" name="achat_courant" disabled="disabled" {{=checkAchatCourant}} >
+                {{pass}}
+             </td>
+        </tr>
+         <tr>
+            <td class="bleu">{{=form.custom.label.description}}</td>
+            <td>{{if lecture == False:}}{{=form.custom.widget.description}}{{else:}} {{=form.vars.description}}{{pass}}</td>
+        </tr>        
+    </table>
+    
+    <div>
+                {{=form.custom.submit}}
+                {{if request.vars.idDossier is not None:}}
+                      <div class='divOfBouton'>
+                                       {{=A('Suivant', _class='styleBouton', _href= URL('achat',  'gestionProduits', vars=dict(idDossier=request.vars.idDossier)), cid=request.cid)}}
+                       </div>
+                {{pass}}
+    </div>
+    
+{{=form.custom.end}}
+</div>

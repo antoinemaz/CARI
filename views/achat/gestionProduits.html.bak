@@ -1,0 +1,24 @@
+{{extend 'layout.html'}}
+
+<div class="gestion">
+    
+     {{include 'frises.html'}}
+    
+    <div class="divTitre center">
+        <div>Total de la demande : {{=prixTot}} € </div>
+    </div>
+
+    {{if gestionProduits == True:}}
+        <div class="divOfBouton">
+            {{=A('Ajouter un produit',_href=URL('addProduits',vars=dict(idDossier=request.vars.idDossier)),cid=request.cid, _class='styleBouton')}}
+        </div>
+    {{pass}}
+
+    {{=gridProduits}}
+    
+    <div class="divOfBouton">
+        {{=A('Retour', _class='styleBouton' ,_href=URL('projet', 'addProjet',vars=dict(idDossier=request.vars.idDossier)),cid=request.cid)}}
+        {{=A('Suivant', _class='styleBouton', _href=URL('document','gestionPjs' , vars=dict(idDossier=request.vars.idDossier)),  cid=request.cid)}}
+    </div>
+
+</div>

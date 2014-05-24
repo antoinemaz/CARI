@@ -1,0 +1,323 @@
+/* GENERAL */
+html{
+    overflow:auto;
+}
+
+.center {
+    text-align:center;
+}
+
+.bleu{
+   color: #18447A;
+}
+
+body{
+    background-color:#333333
+}
+
+a{
+    color: #18447A;
+    text-decoration: none;
+}
+
+td{
+vertical-align: middle!important;
+}
+
+a:hover{
+    text-decoration:underline;
+ }
+
+.inline{
+    display:inline!important;
+}
+
+.bloc{
+    display:block!important;
+}
+
+#main{
+    margin-left: auto;
+    margin-right: auto;
+    width: 80%;
+    margin-top:0px;
+    margin-bottom:10px;
+    background-color: #FFFFFF;
+}
+
+#header{
+    margin-top:0px;
+}
+
+#titre {
+    color: #005190;
+    display: inline-block;
+    font-size: 200%;
+    line-height: 1.2;
+    margin-left: 148px;
+    font-weight:bold;
+    text-shadow: 8px 6px 5px #B4B4B4;
+}
+
+#footer{
+    background-color: #FFFFFF;
+    height: 50px;
+    text-align:center;
+    border-top: 1px solid #C7C7C7;
+    padding-top: 10px;
+}
+
+#footer a{
+   padding: 20px;
+}
+
+#content{
+    height: 900px;
+}
+
+.auth_navbar{
+    display: none;
+}
+
+.web2py-menu{
+   padding-top: 8px;
+    text-align:center;
+}
+
+.web2py-menu li{
+    background: url("/CARI/static/images/iconecari.png");
+    display:inline;
+    background-position: left center;
+    background-repeat: no-repeat;
+    padding-left: 12px;
+    padding-right: 10px;
+}
+
+.web2py-menu li a{
+}
+
+
+.form_header a {
+     display:block!important;
+     text-align:center;
+}
+
+.linkAction{
+    margin-top: 9px;
+    text-align: center;
+}
+
+.titreGestion{
+    background-color: #EAEAEA;
+    color: #18447A;
+    font-size: 19px;
+    font-weight: bold;
+    padding: 7px;
+    text-align: center;
+}
+
+.addButton{
+    margin-bottom: 0;
+    margin-top: 8px;
+    text-align: center;
+    list-style-image: url("/CARI/static/images/iconecari.png");
+}
+
+.web2py_grid table{
+     margin: 20px auto 0;
+    text-align: center;
+}
+
+.web2py_console a, .
+{
+    display: block;
+    text-align: center;
+}
+
+.web2py_counter{
+     display:none;
+}
+
+.formStyle {
+     background-color: #EAEAEA;
+    border-radius: 14px;
+    margin: 0 auto 10px;
+    padding: 4px;
+    width: 80%;
+    border: 1px solid #18447A;
+    margin-top: 10px;
+}
+
+/* VUES UTILISATEURS */
+#user table{
+    margin: 0 auto;
+}
+
+#user form {
+ margin-top:20px;
+}
+
+.tabUsers .web2py_counter{
+ display:none;
+}
+
+.tabUsers{
+ width:100%
+}
+
+.gestion table{
+    margin: 20px auto 0;
+    text-align: center;
+}
+
+#users{
+ margin-top: 40px;
+}
+
+#group_id__error{
+    height:inherit!important;
+}
+
+/* VUE PROJET */
+.total{
+    background-color: #EAEAEA;
+    color: #18447A;
+    text-align: center;
+    margin: 10px auto 0;
+    width: 350px;
+}
+
+.checkPorteur{
+     display: block;
+    margin-bottom: 13px;
+}
+
+.checkPorteur input{
+    margin:0 0 0 0!important;
+}
+
+.crumbs {
+	text-align: center;
+    margin-top: 10px;
+}
+
+.crumbs ul {
+	list-style: none;
+	display: inline-table;
+}
+.crumbs ul li {
+	display: inline;
+}
+
+.crumbs ul li span {
+    background: none repeat scroll 0 0 #EAEAEA;
+    color: #18447A;
+    display: block;
+    float: left;
+    font-size: 14px;
+    height: 30px;
+    margin: 0 10px 0 0;
+    padding: 16px 26px 0 43px;
+    position: relative;
+    text-align: center;
+    text-decoration: none;
+}
+
+.crumbs ul li span:before {
+    border-bottom: 27px solid rgba(0, 0, 0, 0);
+    border-left: 37px solid #FFFFFF;
+    border-top: 18px solid rgba(0, 0, 0, 0);
+    content: "";
+    left: 0;
+    position: absolute;
+    top: 0;
+}
+.crumbs ul li span:after {
+    border-bottom: 27px solid rgba(0, 0, 0, 0);
+    border-left: 40px solid #EAEAEA;
+    border-top: 19px solid rgba(0, 0, 0, 0);
+    content: "";
+    position: absolute;
+    right: -40px;
+    top: 0;
+    z-index: 1;
+}
+
+.crumbs ul li:first-child span {
+	border-top-left-radius: 10px; border-bottom-left-radius: 10px;
+}
+
+.crumbs ul li:first-child span:before {
+	display: none;
+}
+
+.crumbs ul li:last-child span {
+	border-top-right-radius: 10px; border-bottom-right-radius: 10px;
+}
+
+.crumbs ul li:last-child span:after {
+	display: none;
+}
+
+.crumbs .currentCase{
+    color:#EF7F01;
+}
+
+.gestionDossierDetail textarea{
+    height: 148px;
+    margin: 0 auto;
+    width: 420px;
+}
+
+.commentaire{
+    background-color: #EAEAEA;
+    margin-bottom: 14px;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 600px;
+    padding-bottom: 15px;
+    padding-left: 9px;
+    padding-right: 9px;
+    text-align: left;
+    white-space: pre-line;
+    border-radius: 14px;
+}
+
+.divInfoUser{
+    width: 350px;
+    border: 1px solid #18447A;
+}
+
+.divTitre{
+   color: #18447A;
+   font-weight: bold;
+}
+
+.styleBouton{
+    background-color: #FFFFFF;
+    border: 1px solid #B3BAED;
+    border-radius: 7px;
+    padding: 5px;
+    margin-bottom: 5px;
+    width: 60px;
+    margin: 0 auto;
+    text-align: center;
+    text-decoration: none;
+}
+
+.divOfBouton{
+    margin-bottom: 12px;
+    margin-top: 12px;
+    position: relative;
+    text-align: center;
+}
+
+.styleBouton:hover{
+    background-color: #B3BAED;
+    text-decoration:none;
+}
+
+.addBouton{
+    margin-bottom: 5px;
+    margin-top: 5px;
+}

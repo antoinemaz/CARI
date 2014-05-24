@@ -1,0 +1,371 @@
+# coding: utf8
+@auth.requires_login()
+def addProjet():
+
+    idDossier = request.vars.idDossier;
+    editMode = request.vars.editMode;
+    
+    read = False
+    nomEntite = None
+    initDemande = True
+    isPresident = False
+    isRepresentant = False
+    
+    if idDossier is not None:
+            
+          rowDossier = getDossierById(idDossier)
+          rowPorteur = getPorteurById(rowDossier.porteur_id)
+        
+          isRepresentant = isRepresentantOfDossier(session, rowPorteur.entite_id)
+          isPresident = session.auth.user.group_id == Constantes.PRESIDENT
+          isDemandeur = rowDossier.user_id == session.auth.user.id
+        
+          if isDemandeur == False and  isRepresentant == False and isPresident == False:
+            redirect(URL('default','index'))
+        
+          if (rowDossier.etat_dossier_id != Constantes.BROUILLON and editMode == None):
+            read = True
+    
+    form=SQLFORM.factory(db.porteur, db.dossier,_class='formStyle',_name='formNormal',readonly=read)
+    
+    if idDossier is not None:
+            options = {};
+            if(rowDossier.etat_dossier_id == Constantes.SOUMIS):
+                    options = {OPTION(Constantes.ACCEPTE_TXT, _value=Constantes.ACCEPTE),
+                               OPTION(Constantes.REFUSE_TXT, _value=Constantes.REFUSE),
+                               OPTION(Constantes.ATTENTE_TXT, _value=Constantes.ATTENTE)}
+                    
+            if(rowDossier.etat_dossier_id == Constantes.ATTENTE):
+                    options = {OPTION(Constantes.ACCEPTE_TXT, _value=Constantes.ACCEPTE),
+                               OPTION(Constantes.REFUSE_TXT, _value=Constantes.REFUSE)}
+                          
+            if not options:
+                select = ''
+                select_libelle = ''
+            else:
+                select = SELECT(*options,_name='etat_dossier_id')
+                select_libelle = SPAN('Changer l\'état à : ')
+            
+            formAdmin = FORM(SPAN('Commentaire : '), TEXTAREA(_name='commentaire',_class="text"), select_libelle, select, BR(),INPUT(_type='submit', _value="Enregistrer"))
+    
+    if  idDossier is not None:
+            
+        form.vars.intitule = rowDossier.intitule
+        form.vars.urgent = rowDossier.urgent
+        form.vars.caractere_urgent = rowDossier.caractere_urgent
+        form.vars.remplacement_materiel = rowDossier.remplacement_materiel
+        form.vars.reference_materiel = rowDossier.reference_materiel
+        form.vars.description = rowDossier.description
+        form.vars.beneficiaires = rowDossier.beneficiaires
+        form.vars.achat_courant = rowDossier.achat_courant
+        form.vars.mailResponsable = rowDossier.mailResponsable
+        form.vars.mailGestionnaire = rowDossier.mailGestionnaire
+        
+        form.vars.nom = rowPorteur.nom
+        form.vars.prenom = rowPorteur.prenom
+        form.vars.mail = rowPorteur.mail
+        form.vars.entite_id = rowPorteur.entite_id
+        
+        form.vars.id = rowDossier.id
+        
+        formAdmin.vars.commentaire = rowDossier.commentaire
+        form.vars.commentaire = rowDossier.commentaire
+        
+        form.vars.etat_dossier_id = rowDossier.etat_dossier_id
+        formAdmin.vars.etat_dossier_id = rowDossier.etat_dossier_id
+        
+        if form.vars.etat_dossier_id is None or form.vars.etat_dossier_id == Constantes.BROUILLON:
+            initDemande = True
+        else:
+            initDemande = False
+        
+        nomEntite=getNameOfEntite(form.vars.entite_id)
+    else:
+        form.vars.etat_dossier_id = Constantes.BROUILLON
+
+        # SI LE FORMULAIRE EST SOUMIS
+    if form.process(formname='formNormal').accepted:
+        
+       form.vars.user_id = session.auth.user.id
+        
+       if idDossier is None:
+           idPorteur = db.porteur.insert(**db.porteur._filter_fields(form.vars))
+           form.vars.porteur_id=idPorteur
+           
+           idDoss = db.dossier.insert(**db.dossier._filter_fields(form.vars))
+       else:
+           
+           rowDos = db(db.dossier.id == idDossier).select().first()
+           
+           form.vars.commentaire = formAdmin.vars.commentaire
+             
+           #idPorteur = db.porteur.update_record(**db.porteur._filter_fields(form.vars))
+           #form.vars.porteur_id=idPorteur
+           rowDos.update_record(**db.dossier._filter_fields(form.vars))
+           
+           idPort = rowDos.porteur_id
+           rowPor = db(db.porteur.id == idPort).select().first()
+           rowPor.update_record(**db.porteur._filter_fields(form.vars))
+                
+           idDoss = idDossier
+
+        # INSERTION EN BASE
+       response.flash = 'form accepted'
+        
+       if idDossier is None:
+           redirect(URL('gestionProduits',vars=dict(idDossier=idDoss)))
+       else:
+           redirect(URL('addProjet',vars=dict(idDossier=idDoss)))
+        
+        
+     # SI LE FORMULAIRE CONTIENT DES ERREURS
+    elif form.errors:
+        # ON VA LES AFFICHER
+       response.flash = 'form has errors'
+    else:
+        # FORMULAIRE VIDE
+       response.flash = 'please fill out the form'
+    
+    if  idDossier is not None:
+            # SI LE FORMULAIRE GESTION EST SOUMIS
+        if formAdmin.accepts(request,session):
+            
+           if idDossier is not None:
+                
+               rowDos = db(db.dossier.id == idDossier).select().first();
+               rowDos.update_record(commentaire=formAdmin.vars.commentaire)
+                
+               if formAdmin.vars.etat_dossier_id is not None:
+                   rowDos.update_record(etat_dossier_id=formAdmin.vars.etat_dossier_id)
+                
+               idDoss = idDossier
+                
+                # INSERTION EN BASE
+               response.flash = 'form accepted'
+               redirect(URL('addProjet',vars=dict(idDossier=idDoss)))
+         # SI LE FORMULAIRE CONTIENT DES ERREURS
+        elif formAdmin.errors:
+            # ON VA LES AFFICHER
+           response.flash = 'form has errors'
+        else:
+            # FORMULAIRE VIDE
+           response.flash = 'please fill out the form'
+    else:
+       formAdmin = None 
+    
+    return dict(form=form, formAdmin=formAdmin, entite=nomEntite, lecture=read, initDossier=initDemande, president=isPresident, responsable=isRepresentant, demandeur=isDemandeur,rowDossier=rowDossier)
+
+def gestionProduits():
+    
+    idDossier = request.vars.idDossier;
+    
+    if idDossier is not None:
+        
+          gestionProduits = True
+        
+          rowDossier = getDossierById(idDossier)
+          rowPorteur = getPorteurById(rowDossier.porteur_id)
+    
+          isRepresentant = isRepresentantOfDossier(session, rowPorteur.entite_id)
+          isPresident = session.auth.user.group_id == Constantes.PRESIDENT
+          isDemandeur = rowDossier.user_id == session.auth.user.id
+        
+          if isDemandeur == False and  isRepresentant == False and isPresident == False:
+              redirect(URL('default','index'))
+                
+          if isDemandeur and (not isPresident and not isRepresentant) and rowDossier.etat_dossier_id != Constantes.BROUILLON:
+                  gestionProduits = False
+            
+          if rowDossier.etat_dossier_id is None or rowDossier.etat_dossier_id == Constantes.BROUILLON:
+                initDossier = True
+          else:
+                initDossier = False
+    
+    query = db.achat.dossier_id==request.vars.idDossier
+    
+    prixTot = 0.0
+    prixTotCari = 0.0
+    
+    for row in db(query).select():
+        prixTot = prixTot+row.Total
+    
+    gridProduits = SQLFORM.grid(query, searchable=False, csv=False, ui="jquery-ui", links_in_grid=False, details=False, create=False, editable=gestionProduits, deletable=gestionProduits)
+    return locals()
+
+@auth.requires_login()
+def addProduits():
+
+    idDossier = request.vars.idDossier;
+    
+    if idDossier is not None:
+              
+          rowDossier = getDossierById(idDossier)
+          rowPorteur = getPorteurById(rowDossier.porteur_id)
+    
+          isRepresentant = isRepresentantOfDossier(session, rowPorteur.entite_id)
+          isPresident = session.auth.user.group_id == Constantes.PRESIDENT
+          isDemandeur = rowDossier.user_id == session.auth.user.id
+        
+          if isDemandeur == False and  isRepresentant == False and isPresident == False:
+              redirect(URL('default','index'))
+                
+          if isDemandeur and (not isPresident and not isRepresentant) and rowDossier.etat_dossier_id != Constantes.BROUILLON:
+              redirect(URL('default','index'))
+    
+     # CREATION DU FORMULAIRE D'AJOUT D'UNE COMPOSANTE
+    form = SQLFORM(db.achat)
+    
+    # ON SPECIFIE L'ID DU DOSSIER AU PROJET
+    form.vars.dossier_id = request.vars.idDossier
+    
+   # if form.vars.prix_demande_cari is None:
+    #    form.vars.prix_demande_cari = 0.0
+    
+    # SI LE FORMULAIRE EST SOUMIS
+    if form.process().accepted:
+     
+        # INSERTION EN BASE
+        response.flash = 'form accepted'
+        # PUIS ON REDIRIGE VERS LA PAGE DE GESTION DES COMPOSANTES
+        redirect(URL('gestionProduits',vars=dict(idDossier=request.vars.idDossier)))
+     # SI LE FORMULAIRE CONTIENT DES ERREURS
+    elif form.errors:
+        # ON VA LES AFFICHER
+       response.flash = 'form has errors'
+    else:
+        # FORMULAIRE VIDE
+       response.flash = 'please fill out the form'
+
+    return locals()
+
+@auth.requires_login()
+def gestionPjs():
+    
+    idDossier = request.vars.idDossier;
+    
+    if idDossier is not None:
+        
+          gestionPJs = True
+        
+          rowDossier = getDossierById(idDossier)
+          rowPorteur = getPorteurById(rowDossier.porteur_id)
+    
+          isRepresentant = isRepresentantOfDossier(session, rowPorteur.entite_id)
+          isPresident = session.auth.user.group_id == Constantes.PRESIDENT
+          isDemandeur = rowDossier.user_id == session.auth.user.id
+        
+          if isDemandeur == False and  isRepresentant == False and isPresident == False:
+              redirect(URL('default','index'))
+                
+          if isDemandeur and (not isPresident and not isRepresentant) and rowDossier.etat_dossier_id != Constantes.BROUILLON:
+                  gestionPJs = False
+            
+          if rowDossier.etat_dossier_id is None or rowDossier.etat_dossier_id == Constantes.BROUILLON:
+                initDossier = True
+          else:
+                initDossier = False
+    
+    readonlyUser(True,False)
+    
+    query = db.piece_jointe.id_dossier==request.vars.idDossier
+    
+    #links = [lambda row: A('View Post',_href=URL("default","view",args=[row.id]))]
+    # links=links, links_in_grid=True,
+    
+    gridPJ = SQLFORM.grid(query, searchable=False, csv=False, ui="jquery-ui", details=False, create=False,editable=False, deletable=gestionPJs)
+
+    return locals()
+
+
+@auth.requires_login()
+def addPJs():
+    
+    idDossier = request.vars.idDossier;
+    
+    if idDossier is not None:
+              
+          rowDossier = getDossierById(idDossier)
+          rowPorteur = getPorteurById(rowDossier.porteur_id)
+    
+          isRepresentant = isRepresentantOfDossier(session, rowPorteur.entite_id)
+          isPresident = session.auth.user.group_id == Constantes.PRESIDENT
+          isDemandeur = rowDossier.user_id == session.auth.user.id
+        
+          if isDemandeur == False and  isRepresentant == False and isPresident == False:
+              redirect(URL('default','index'))
+                
+          if isDemandeur and (not isPresident and not isRepresentant) and rowDossier.etat_dossier_id != Constantes.BROUILLON:
+              redirect(URL('default','index'))
+    
+    displayFileName(False,False)
+    
+     # CREATION DU FORMULAIRE D'AJOUT D'UNE COMPOSANTE
+    form = SQLFORM(db.piece_jointe)
+   
+    # ON SPECIFIE L'ID DU DOSSIER AU PROJET
+    form.vars.id_dossier = request.vars.idDossier
+    
+    if request.vars.file_uid!=None:
+         form.vars.file_name = request.vars.file_uid.filename
+    
+    # SI LE FORMULAIRE EST SOUMIS
+    if form.process().accepted:
+        # INSERTION EN BASE        
+       response.flash = 'form accepted'
+        # PUIS ON REDIRIGE VERS LA PAGE DE GESTION DES COMPOSANTES
+       redirect(URL('gestionPjs',vars=dict(idDossier=request.vars.idDossier)))
+     # SI LE FORMULAIRE CONTIENT DES ERREURS
+    elif form.errors:
+        # ON VA LES AFFICHER
+       response.flash = 'form has errors'
+    else:
+        # FORMULAIRE VIDE
+       response.flash = 'please fill out the form'
+
+    return locals()
+
+@auth.requires_login()
+def finalisationDemande():
+    
+    idDossier = request.vars.idDossier;
+    
+    if idDossier is not None:
+              
+          rowDossier = getDossierById(idDossier)
+          rowPorteur = getPorteurById(rowDossier.porteur_id)
+    
+          isRepresentant = isRepresentantOfDossier(session, rowPorteur.entite_id)
+          isPresident = session.auth.user.group_id == Constantes.PRESIDENT
+          isDemandeur = rowDossier.user_id == session.auth.user.id
+        
+          if isDemandeur == False and  isRepresentant == False and isPresident == False:
+              redirect(URL('default','index'))
+                
+          if rowDossier.etat_dossier_id != Constantes.BROUILLON:
+              redirect(URL('default','index'))
+                                    
+          if rowDossier.etat_dossier_id is None or rowDossier.etat_dossier_id == Constantes.BROUILLON:
+                initDossier = True
+          else:
+                initDossier = False
+     
+    form = FORM(INPUT(_type='submit', _value="Soumettre"))
+    
+    changeState = False
+    
+    rowDos = db(db.dossier.id == request.vars.idDossier).select().first()
+    
+    if(rowDos.etat_dossier_id == Constantes.SOUMIS):
+        changeState = True;
+    
+    if form.accepts(request,session):
+        rowDos.update_record(etat_dossier_id=Constantes.SOUMIS)
+        changeState = True;
+       
+        response.flash = 'form accepted'
+    elif form.errors:
+        response.flash = 'form has errors'
+    else:
+        response.flash = 'please fill the form'
+    
+    return locals()

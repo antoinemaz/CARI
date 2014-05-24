@@ -1,0 +1,8 @@
+{{extend 'layout.html'}}
+<div class="gestion">
+    <div class="titreGestion">Gestion des budgets</div>
+
+    <div class='divOfBouton'>
+       {{=A('Ajouter un budget',_href=URL('addBudget'),cid=request.cid, _class='styleBouton addButton')}}
+    </div>
+</div>

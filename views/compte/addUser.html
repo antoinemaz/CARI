@@ -1,0 +1,7 @@
+{{extend 'layout.html'}}
+<div class="gestion">
+    <div class="titreGestion">Ajout d'un utilisateur</div>
+    <!-- LIEN DE RETOUR VERS LA PAGE DE GESTION DES UTILISATEURS -->
+    {{=A('Retour',_href=URL('gestionUsers'),cid=request.cid, _class='linkAction bloc')}}
+    {{=form}}
+</div>

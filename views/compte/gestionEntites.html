@@ -1,0 +1,5 @@
+{{extend 'layout.html'}}
+    <div class="titreGestion">Gestion des entités</div>
+    <!-- LIEN D'AJOUT D'UNE COMPOSANTE -->
+    <ul class="addButton"><li>{{=A('Ajouter une entité',_href=URL('addEntite'),cid=request.cid, _class='linkAction inline')}}</li></ul>
+{{=gridEntites}}

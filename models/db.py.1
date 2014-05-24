@@ -1,0 +1,185 @@
+# coding: utf8
+from gluon.tools import Auth
+
+# INSTANCE D'UNE CONNEXION BDD
+db = DAL('mysql://root@localhost/cari')
+
+# TABLE COMPOSANTE
+db.define_table('entite', Field('name'), format='%(name)s')
+
+# ID DES ENTITES INVISIBLES DANS LES FORMULAIRES
+db.entite.id.readable = False
+
+# TABLE BUDGET LIE A UNE ENTITE
+db.define_table('budget', Field('date_budget','date'), Field('budget_initial','double'), Field('entite_id','reference entite'))
+
+db.budget.entite_id.label="Entité"
+
+# GESTION DE LA TABLE DES UTILISATEURS : MODIFICATION DES TABLES DES USERS DE WEB2PY
+auth = Auth(db)
+# UN UTILISATEUR EST LIE A UNE COMPOSANTE ET UN GROUPE (ROLE)
+# NO ACTION : REND LA SUPPRESSION EN CASCADE IMPOSSIBLE
+auth.settings.extra_fields['auth_user'] = [
+Field('entite_id', 'reference entite',ondelete='NO ACTION' ),
+Field('group_id', 'reference auth_group',ondelete='NO ACTION')]
+
+# ON REDEFINIT LA TABLE GROUPE DE WEB2PY
+db.define_table(auth.settings.table_group_name,
+                Field('role', length=512, default=''),Field('description', 'text', default=''),format='%(role)s' )
+
+custom_auth_table = db[auth.settings.table_group_name] # ON RECUPERE LA CUSTOM TABLE DEFINIE AU DESSUS
+# AJOUT DES CHAMPS OBLIGATOIRES
+custom_auth_table.role.requires =   IS_NOT_EMPTY(error_message=auth.messages.is_empty)
+custom_auth_table.description.requires =   IS_NOT_EMPTY(error_message=auth.messages.is_empty)
+auth.settings.table_group = custom_auth_table # ON LIE LA CUSTOM TABLE A LA VRAIE TABLE GROUP
+
+# CREATION DES TABLES D'AUTHENTIFICATION EN BASE
+auth.define_tables()
+
+# CONTROLLEUR PAR DEFAUT DES VUES CONCERNANT LES UTILISATEURS (GERE PAR WEB2PY)
+auth.settings.controller = 'default'
+# ON DEFINIT LA PAGE DE CONNEXION DES UTILISATEURS : PAGE user
+auth.settings.login_url = URL('user', args='login');
+
+# MODIFICATION DES LABELS DES CHAMPS DANS LES FORMULAIRES
+db.auth_user.entite_id.label='Entité'
+db.auth_user.group_id.label='Role'
+# POSSIBILITE DE NE PAS RENSEIGNER DE COMPOSANTE POUR UN UTILISATEUR
+db.auth_user.entite_id.requires=IS_EMPTY_OR(IS_IN_DB(db,'entite.id','%(name)s'))
+
+# ID DE LA TABLE UTILISATEUR INVISIBLE DES LES FORMULAIRES
+db.auth_user.id.readable = False
+
+# TABLE PORTEUR
+db.define_table('porteur', Field('nom'), Field('prenom'), Field('mail'), Field('entite_id','reference entite'))
+
+db.porteur.entite_id.label="Entité"
+
+# TABLE ETAT DOSSIER
+db.define_table('etat_dossier',Field('nom'))
+
+# TABLE DOSSIER : UN DOSSIER LIE A UN UTILISATEUR
+db.define_table('dossier',
+Field('intitule'), Field('urgent', 'boolean'), Field('caractere_urgent'), Field('remplacement_materiel','boolean'), Field('reference_materiel'),
+Field('description','text'), Field('beneficiaires'), Field('mailResponsable'), Field('mailGestionnaire'), Field('achat_courant','boolean'), Field('user_id','reference auth_user'),Field('porteur_id','reference porteur',writable=False,readable=False), Field('etat_dossier_id','reference etat_dossier',writable=False,readable=False) )
+
+db.dossier.user_id.requires=IS_EMPTY_OR(IS_IN_DB(db,'auth_user.id',))
+db.dossier.intitule.requires=IS_NOT_EMPTY()
+db.dossier.beneficiaires.requires=IS_NOT_EMPTY()
+
+db.dossier.mailResponsable.label='Email du responsable'
+db.dossier.mailGestionnaire.label='Email du gestionnaire'
+
+# TABLE PRODUIT : UN PRODUIT EST LIE A UN DOSSIER
+db.define_table('achat',
+Field('libelle'), Field('prix_unitaire','double',default=0.0), Field('date_achat','date'), Field('qte', 'integer',default=1), Field('dossier_id','reference dossier'), Field('budget_id','reference budget', readable=False, writable=False), Field('entite_id','reference entite'), Field.Virtual('Total', lambda row: row.achat.prix_unitaire*row.achat.qte))
+
+db.achat.date_achat.represent = lambda name, row: name.strftime("%d/%m/%Y")
+db.achat.prix_unitaire.represent = lambda name,row: str(name) +' €'
+db.achat.prix_unitaire.represent = lambda name,row: str(name) +' €'
+db.achat.Total.represent = lambda name,row: str(name) +' €'
+
+db.achat.prix_unitaire.requires=IS_NOT_EMPTY()
+db.achat.qte.requires=IS_NOT_EMPTY()
+db.achat.date_achat.requires=IS_NOT_EMPTY()
+
+db.achat.id.readable = False
+db.achat.id.writable = False
+
+db.achat.dossier_id.writable = False
+db.achat.dossier_id.readable = False
+
+db.achat.entite_id.label = "Budget"
+
+db.define_table('piece_jointe',
+    Field('file_uid', 'upload',autodelete=True), Field('file_name', 'text'),Field('id_dossier','integer'))
+
+db.piece_jointe.id_dossier.readable = False
+db.piece_jointe.id_dossier.writable = False
+db.piece_jointe.file_name.readable = True
+db.piece_jointe.file_uid.label='Choisir un fichier'
+db.piece_jointe.file_name.label='Nom du fichier'
+db.piece_jointe.file_uid.label='Fichier'
+db.piece_jointe.id.writable = False
+db.piece_jointe.id.readable = False
+
+def isRepresentantOfDossier(mySession):
+    query = db(db.auth_user.group_id==Constantes.REPRESENTANT).select(db.auth_user.id)
+    
+    for row in test:
+        if row.id==mySession.auth.user.id:
+            test=True
+            break
+        else:
+            test=False
+            
+   return test;
+
+def getInfosUser(unid):
+     rows = db.auth_user[unid]
+     return rows
+
+def getDossierById(unid):
+     rows = db.dossier[unid]
+     return rows
+
+def getPorteurById(unid):
+     rows = db.porteur[unid]
+     return rows
+    
+def getNameOfEntite(unid):
+    if unid is None:
+        name =""
+    else:
+        name = db.entite[unid].name
+    return name
+
+def displayFileName(read, write):
+    db.piece_jointe.file_name.readable = read
+    db.piece_jointe.file_name.writable = write
+
+# METHODE QUI VA AUTORISER OU REFUSER LA MODIFICATION/LECTURE DU ROLE ET COMPOSANTE D'UN UTILISATEUR
+# @param read : booléan. True : les champs entite  et role vont être visibles
+# @param write : booléan. True : les champs entite et role vont être modifiables
+def readonlyUser(read, write):
+     db.auth_user.group_id.readable = read
+     db.auth_user.group_id.writable = write
+     db.auth_user.entite_id.readable = read
+     db.auth_user.entite_id.writable = write
+
+readonlyUser(True, False)
+
+# METHODE QUI VA PEUPLER LA BASE DE DONNEES, A APPLIQUER A CHAQUE INITIALISATION DE LA BASE
+# A EXECUTER AVEC LE SHELL
+def scriptInsert():
+
+    # ON AJOUTE LES 3 ROLES
+    auth.add_group('President', 'Président de l\'association CARI')
+    auth.add_group('Utilisateur', 'Personne soumettant les demandes')
+    auth.add_group('Représentant', 'Représentant de l\'entité')
+
+    # INSERTION DU PREMIER UTILISATEUR
+    db.auth_user.insert(
+            password = db.auth_user.password.validate('admin')[0],
+            email = 'null@null.com',
+            first_name = 'System',
+            last_name = 'Administrator',
+            group_id=1
+    )
+
+    # ON AFFECTE LE ROLE PRESIDENT AU PREMIER UTILISATEUR
+    auth.add_membership(user_id=1, group_id=1)
+
+    # LISTE DES ENTITES
+    db.entite.insert(name="UFR LAM");
+    db.entite.insert(name="services communs");
+
+    # INSERTION DES ETATS
+    db.etat_dossier.insert(nom="Brouillon")
+    db.etat_dossier.insert(nom="Soumis")
+    db.etat_dossier.insert(nom="Suspendu")
+    db.etat_dossier.insert(nom="Accepté")
+    db.etat_dossier.insert(nom="Refusé")
+    
+    #UN BUDGET POUR TESTER
+    #db.budget.insert(entite_id=1, annee_budget='2014', budget_initial="10000")

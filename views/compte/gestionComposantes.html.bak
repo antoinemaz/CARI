@@ -1,0 +1,4 @@
+{{extend 'layout.html'}}
+    <div class="titreGestion">Gestion des composantes</div>
+    <ul class="addButton"><li>{{=A('Ajouter une composante',_href=URL('addComposante'),cid=request.cid, _class='linkAction inline')}}</li></ul>
+{{=gridComposantes}}

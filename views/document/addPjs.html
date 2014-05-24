@@ -1,0 +1,7 @@
+{{extend 'layout.html'}}
+<div class="gestion">
+    <div class="titreGestion">Ajout de pièces jointes</div>
+    <!-- LIEN DE RETOUR VERS LA PAGE DE GESTION DES COMPOSANTES -->
+    {{=form}}
+    {{=A('Retour',_href=URL('gestionPjs',vars=dict(idDossier=request.vars.idDossier)),cid=request.cid, _class='linkAction bloc')}}
+</div>

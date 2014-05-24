@@ -1,0 +1,141 @@
+timestamp: 2014-04-18T14:14:20.215000
+CREATE TABLE entite(
+    id INT AUTO_INCREMENT NOT NULL,
+    name VARCHAR(512),
+    PRIMARY KEY(id)
+) ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2014-04-18T14:14:20.391000
+CREATE TABLE budget(
+    id INT AUTO_INCREMENT NOT NULL,
+    date_budget DATE,
+    budget_initial DOUBLE,
+    entite_id INT, INDEX entite_id__idx (entite_id), FOREIGN KEY (entite_id) REFERENCES entite (id) ON DELETE CASCADE,
+    PRIMARY KEY(id)
+) ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2014-04-18T14:14:20.456000
+CREATE TABLE auth_group(
+    id INT AUTO_INCREMENT NOT NULL,
+    role VARCHAR(512),
+    description LONGTEXT,
+    PRIMARY KEY(id)
+) ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2014-04-18T14:14:20.523000
+CREATE TABLE auth_user(
+    id INT AUTO_INCREMENT NOT NULL,
+    first_name VARCHAR(128),
+    last_name VARCHAR(128),
+    email VARCHAR(512),
+    password VARCHAR(512),
+    registration_key VARCHAR(512),
+    reset_password_key VARCHAR(512),
+    registration_id VARCHAR(512),
+    entite_id INT, INDEX entite_id__idx (entite_id), FOREIGN KEY (entite_id) REFERENCES entite (id) ON DELETE NO ACTION,
+    group_id INT, INDEX group_id__idx (group_id), FOREIGN KEY (group_id) REFERENCES auth_group (id) ON DELETE NO ACTION,
+    PRIMARY KEY(id)
+) ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2014-04-18T14:14:20.592000
+CREATE TABLE auth_membership(
+    id INT AUTO_INCREMENT NOT NULL,
+    user_id INT, INDEX user_id__idx (user_id), FOREIGN KEY (user_id) REFERENCES auth_user (id) ON DELETE CASCADE,
+    group_id INT, INDEX group_id__idx (group_id), FOREIGN KEY (group_id) REFERENCES auth_group (id) ON DELETE CASCADE,
+    PRIMARY KEY(id)
+) ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2014-04-18T14:14:20.695000
+CREATE TABLE auth_permission(
+    id INT AUTO_INCREMENT NOT NULL,
+    group_id INT, INDEX group_id__idx (group_id), FOREIGN KEY (group_id) REFERENCES auth_group (id) ON DELETE CASCADE,
+    name VARCHAR(512),
+    table_name VARCHAR(512),
+    record_id INT,
+    PRIMARY KEY(id)
+) ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2014-04-18T14:14:20.735000
+CREATE TABLE auth_event(
+    id INT AUTO_INCREMENT NOT NULL,
+    time_stamp DATETIME,
+    client_ip VARCHAR(512),
+    user_id INT, INDEX user_id__idx (user_id), FOREIGN KEY (user_id) REFERENCES auth_user (id) ON DELETE CASCADE,
+    origin VARCHAR(512),
+    description LONGTEXT,
+    PRIMARY KEY(id)
+) ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2014-04-18T14:14:20.767000
+CREATE TABLE auth_cas(
+    id INT AUTO_INCREMENT NOT NULL,
+    user_id INT, INDEX user_id__idx (user_id), FOREIGN KEY (user_id) REFERENCES auth_user (id) ON DELETE CASCADE,
+    created_on DATETIME,
+    service VARCHAR(512),
+    ticket VARCHAR(512),
+    renew CHAR(1),
+    PRIMARY KEY(id)
+) ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2014-04-18T14:14:20.864000
+CREATE TABLE porteur(
+    id INT AUTO_INCREMENT NOT NULL,
+    nom VARCHAR(512),
+    prenom VARCHAR(512),
+    mail VARCHAR(512),
+    entite_id INT, INDEX entite_id__idx (entite_id), FOREIGN KEY (entite_id) REFERENCES entite (id) ON DELETE CASCADE,
+    PRIMARY KEY(id)
+) ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2014-04-18T14:14:20.942000
+CREATE TABLE etat_dossier(
+    id INT AUTO_INCREMENT NOT NULL,
+    nom VARCHAR(512),
+    PRIMARY KEY(id)
+) ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2014-04-18T14:16:54.290000
+CREATE TABLE dossier(
+    id INT AUTO_INCREMENT NOT NULL,
+    intitule VARCHAR(512),
+    urgent CHAR(1),
+    caractere_urgent VARCHAR(512),
+    remplacement_materiel CHAR(1),
+    reference_materiel VARCHAR(512),
+    description LONGTEXT,
+    beneficiaires VARCHAR(512),
+    mailResponsable VARCHAR(512),
+    mailGestionnaire VARCHAR(512),
+    achat_courant CHAR(1),
+    user_id INT, INDEX user_id__idx (user_id), FOREIGN KEY (user_id) REFERENCES auth_user (id) ON DELETE CASCADE,
+    porteur_id INT, INDEX porteur_id__idx (porteur_id), FOREIGN KEY (porteur_id) REFERENCES porteur (id) ON DELETE CASCADE,
+    etat_dossier_id INT, INDEX etat_dossier_id__idx (etat_dossier_id), FOREIGN KEY (etat_dossier_id) REFERENCES etat_dossier (id) ON DELETE CASCADE,
+    PRIMARY KEY(id)
+) ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2014-04-18T14:16:54.362000
+CREATE TABLE achat(
+    id INT AUTO_INCREMENT NOT NULL,
+    libelle VARCHAR(512),
+    prix_unitaire DOUBLE,
+    date_achat DATE,
+    qte INT,
+    dossier_id INT, INDEX dossier_id__idx (dossier_id), FOREIGN KEY (dossier_id) REFERENCES dossier (id) ON DELETE CASCADE,
+    budget_id INT, INDEX budget_id__idx (budget_id), FOREIGN KEY (budget_id) REFERENCES budget (id) ON DELETE CASCADE,
+    entite_id INT, INDEX entite_id__idx (entite_id), FOREIGN KEY (entite_id) REFERENCES entite (id) ON DELETE CASCADE,
+    PRIMARY KEY(id)
+) ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2014-04-18T14:16:54.405000
+CREATE TABLE piece_jointe(
+    id INT AUTO_INCREMENT NOT NULL,
+    file_uid VARCHAR(512),
+    file_name LONGTEXT,
+    id_dossier INT,
+    PRIMARY KEY(id)
+) ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2014-05-08T16:27:01.843000
+ALTER TABLE dossier ADD commentaire LONGTEXT;
+success!
+success!

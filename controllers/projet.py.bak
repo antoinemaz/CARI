@@ -1,7 +1,7 @@
 # coding: utf8
 @auth.requires_login()
 def addProjet():
-
+    
     detailsProjetView = True
     gestionProduitsView = False
     gestionPJsView = False
@@ -46,19 +46,21 @@ def addProjet():
     if idDossier is not None:
             options = {};
             if(rowDossier.etat_dossier_id == Constantes.SOUMIS):
-                    options = {OPTION(Constantes.ACCEPTE_TXT, _value=Constantes.ACCEPTE),
+                    options = {OPTION('', _value=0),
+                               OPTION(Constantes.ACCEPTE_TXT, _value=Constantes.ACCEPTE),
                                OPTION(Constantes.REFUSE_TXT, _value=Constantes.REFUSE),
                                OPTION(Constantes.ATTENTE_TXT, _value=Constantes.ATTENTE)}
                     
             if(rowDossier.etat_dossier_id == Constantes.ATTENTE):
-                    options = {OPTION(Constantes.ACCEPTE_TXT, _value=Constantes.ACCEPTE),
+                    options = {OPTION('', _value=0),
+                               OPTION(Constantes.ACCEPTE_TXT, _value=Constantes.ACCEPTE),
                                OPTION(Constantes.REFUSE_TXT, _value=Constantes.REFUSE)}
                           
             if not options:
                 select = ''
                 select_libelle = ''
             else:
-                select = SELECT(*options,_name='etat_dossier_id')
+                select = SELECT(*options, **dict(_name="idEtat", value=0, _id="boxEtats" ) )
                 select_libelle = SPAN('Changer l\'état à : ')
             
             formAdmin = FORM(DIV('Commentaire : ',_class="center"), TEXTAREA(_name='commentaire',_class="text"), DIV(select_libelle, select, BR(),INPUT(_type='submit', _value="Enregistrer"),_class="center"))
@@ -83,7 +85,7 @@ def addProjet():
         formAdmin.vars.commentaire = rowDossier.commentaire
         form.vars.commentaire = rowDossier.commentaire
         form.vars.etat_dossier_id = rowDossier.etat_dossier_id
-        formAdmin.vars.etat_dossier_id = rowDossier.etat_dossier_id
+        formAdmin.vars.idEtat = rowDossier.etat_dossier_id
         
         if form.vars.etat_dossier_id is None or form.vars.etat_dossier_id == Constantes.BROUILLON:
             initDemande = True
@@ -103,6 +105,7 @@ def addProjet():
            idPorteur = porteurService.insertPorteur(form.vars)
            form.vars.porteur_id=idPorteur
            idDoss = projetService.insertDossier(form.vars)
+            
        else:
            
            form.vars.commentaire = formAdmin.vars.commentaire
@@ -132,9 +135,13 @@ def addProjet():
     if  idDossier is not None:
             # SI LE FORMULAIRE GESTION EST SOUMIS
         if formAdmin.accepts(request,session):
-                
-               projetService.update(formAdmin.vars.commentaire, formAdmin.vars.etat_dossier_id, idDossier)
+               
+               etatAvantUpdate = projetService.getDossierById(idDossier).etat_dossier_id
+               
+               projetService.updateStatusDossier(formAdmin.vars.commentaire, formAdmin.vars.idEtat, idDossier)
                idDoss = idDossier
+                
+               mailService.sendMail(idDoss,etatAvantUpdate,request)
                 
                 # INSERTION EN BASE
                response.flash = 'form accepted'
@@ -194,7 +201,9 @@ def finalisationDemande():
     if form.accepts(request,session):
         projetService.updateEtat(Constantes.SOUMIS, idDossier)
         changeState = True;
-       
+        
+        mailService.sendMail(idDossier,None,request)
+        
         response.flash = 'form accepted'
     elif form.errors:
         response.flash = 'form has errors'

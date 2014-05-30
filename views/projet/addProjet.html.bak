@@ -3,6 +3,7 @@
 <script>
     afficherChamps('#no_table_urgent','.urg')
     afficherChamps('#no_table_remplacement_materiel','.rempl')
+    
 </script>
 
 <div class="gestion">
@@ -44,9 +45,9 @@
                     {{=A('Passer en mode visualisation', _class='styleBouton', _href=URL('addProjet', vars=dict(idDossier=request.vars.idDossier)), cid=request.cid)}}
                 {{else:}}
                     {{=A('Passer en mode édition',_class='styleBouton',  _href=URL('addProjet', vars=dict(idDossier=request.vars.idDossier,editMode=True)), cid=request.cid)}}
+                {{pass}}
             {{pass}}
         </div>
-        {{pass}}
     {{pass}}
         
     {{=form.custom.begin}}

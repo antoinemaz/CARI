@@ -23,7 +23,7 @@ class projetService(object):
             rowDos = projetService.getDossierById(idDossier)
             rowDos.update_record(commentaire= comment)
 
-        if etat_id is not None:
+        if etat_id is not None and etat_id != 0 and etat_id != '0':
               projetService.updateEtat(etat_id,idDossier)
               rowDos.update_record(etat_dossier_id= etat_id)
 

@@ -2,6 +2,20 @@
 class userService(object):
 
     @staticmethod
+    def getPresidents():
+        rows = db(db.auth_user.group_id==Constantes.PRESIDENT).select()
+        return rows
+    
+    @staticmethod
+    def getRepresentantsOfEntite(idEntite):
+        
+        query1 = db.auth_user.group_id==Constantes.REPRESENTANT
+        query2 = db.auth_user.entite_id==idEntite
+        
+        rows = db(query1 & query2).select()
+        return rows
+    
+    @staticmethod
     def getInfosUser(unid):
          rows = db.auth_user[unid]
          return rows

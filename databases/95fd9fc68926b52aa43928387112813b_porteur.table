@@ -54,26 +54,9 @@ sg9
 I00
 sg10
 g15
-ssS'entite_id'
+ssS'prenom'
 p18
 (dp19
-g4
-I512
-sg5
-I00
-sg6
-I5
-sg7
-S'INT, INDEX entite_id__idx (entite_id), FOREIGN KEY (entite_id) REFERENCES entite (id) ON DELETE CASCADE'
-p20
-sg9
-I00
-sg10
-S'reference entite'
-p21
-ssS'prenom'
-p22
-(dp23
 g4
 I512
 sg5
@@ -82,7 +65,7 @@ sg6
 I3
 sg7
 S'VARCHAR(512)'
-p24
+p20
 sg9
 I00
 sg10

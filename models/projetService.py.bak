@@ -35,3 +35,15 @@ class projetService(object):
          if idDossier is not None:
               rowDos = projetService.getDossierById(idDossier)
               rowDos.update_record(etat_dossier_id=etat_id)
+
+    @staticmethod
+    def getQueryOfDossier(session):
+        
+          if(isPresident):
+            queryFinal = db.dossier
+          else:
+            query1 = db.dossier.user_id==session.auth.user.id
+            query2 = db.dossier.porteur.id == db.dossier.porteur_id & session.auth.user.entite_id == db.porteur.entite_id
+            queryFinal = db(query1 | query2)
+
+          return queryFinal

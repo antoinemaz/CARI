@@ -38,14 +38,16 @@ class projetService(object):
 
     @staticmethod
     def getQueryOfDossier(session):
-       
+        
+          isRepresentant = groupService.isRepresentantOfDossier(session, rowPorteur.entite_id)
           isPresident = session.auth.user.group_id == Constantes.PRESIDENT
+          isDemandeur = rowDossier.user_id == session.auth.user.id
         
           if(isPresident):
             queryFinal = db.dossier
           else:
             query1 = db.dossier.user_id==session.auth.user.id
-            query2 = db.dossier.porteur.id == db.dossier.porteur_id & session.auth.user.entite_id == db.porteur.entite_id
-            queryFinal = db(query1 | query2)
+            query2 = db.dossier.user_id
+            queryFinal = db(query1 & query2)
 
-          return queryFinal
+         return queryFinal

@@ -31,7 +31,7 @@ def addProjet():
           nameOfEntityUser = entiteService.getNameOfEntite(user.entite_id)
           nameOfGroupUser = groupService.getNameOfGroup(user.group_id)
             
-          isRepresentant = groupService.isRepresentantOfDossier(session, rowPorteur.entite_id)
+          isRepresentant = groupService.isRepresentantOfDossier(session, rowDossier.entite_id)
           isPresident = session.auth.user.group_id == Constantes.PRESIDENT
           isDemandeur = rowDossier.user_id == session.auth.user.id
         
@@ -76,11 +76,11 @@ def addProjet():
         form.vars.beneficiaires = rowDossier.beneficiaires
         form.vars.achat_courant = rowDossier.achat_courant
         form.vars.mailResponsable = rowDossier.mailResponsable
-        form.vars.mailGestionnaire = rowDossier.mailGestionnaire 
+        form.vars.mailGestionnaire = rowDossier.mailGestionnaire
         form.vars.nom = rowPorteur.nom
         form.vars.prenom = rowPorteur.prenom
         form.vars.mail = rowPorteur.mail
-        form.vars.entite_id = rowPorteur.entite_id
+        form.vars.entite_id = rowDossier.entite_id
         form.vars.id = rowDossier.id
         formAdmin.vars.commentaire = rowDossier.commentaire
         form.vars.commentaire = rowDossier.commentaire
@@ -103,6 +103,7 @@ def addProjet():
         
        if idDossier is None:
            idPorteur = porteurService.insertPorteur(form.vars)
+           form.vars.date_dossier = request.now
            form.vars.porteur_id=idPorteur
            idDoss = projetService.insertDossier(form.vars)
             
@@ -174,7 +175,7 @@ def finalisationDemande():
           rowDossier = projetService.getDossierById(idDossier)
           rowPorteur = porteurService.getPorteurById(rowDossier.porteur_id)
     
-          isRepresentant = groupService.isRepresentantOfDossier(session, rowPorteur.entite_id)
+          isRepresentant = groupService.isRepresentantOfDossier(session, rowDossier.entite_id)
           isPresident = session.auth.user.group_id == Constantes.PRESIDENT
           isDemandeur = rowDossier.user_id == session.auth.user.id
         

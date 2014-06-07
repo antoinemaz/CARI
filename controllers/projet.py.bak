@@ -31,7 +31,7 @@ def addProjet():
           nameOfEntityUser = entiteService.getNameOfEntite(user.entite_id)
           nameOfGroupUser = groupService.getNameOfGroup(user.group_id)
             
-          isRepresentant = groupService.isRepresentantOfDossier(session, rowPorteur.entite_id)
+          isRepresentant = groupService.isRepresentantOfDossier(session, rowDossier.entite_id)
           isPresident = session.auth.user.group_id == Constantes.PRESIDENT
           isDemandeur = rowDossier.user_id == session.auth.user.id
         
@@ -103,6 +103,7 @@ def addProjet():
         
        if idDossier is None:
            idPorteur = porteurService.insertPorteur(form.vars)
+           form.vars.date_dossier = request.now
            form.vars.porteur_id=idPorteur
            idDoss = projetService.insertDossier(form.vars)
             
@@ -174,7 +175,7 @@ def finalisationDemande():
           rowDossier = projetService.getDossierById(idDossier)
           rowPorteur = porteurService.getPorteurById(rowDossier.porteur_id)
     
-          isRepresentant = groupService.isRepresentantOfDossier(session, rowPorteur.entite_id)
+          isRepresentant = groupService.isRepresentantOfDossier(session, rowDossier.entite_id)
           isPresident = session.auth.user.group_id == Constantes.PRESIDENT
           isDemandeur = rowDossier.user_id == session.auth.user.id
         

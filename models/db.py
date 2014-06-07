@@ -55,17 +55,17 @@ auth.settings.actions_disabled.append('register')
 auth.settings.login_next = URL('index')
 
 # TABLE PORTEUR
-db.define_table('porteur', Field('nom'), Field('prenom'), Field('mail'), Field('entite_id','reference entite'))
-
-db.porteur.entite_id.label="Entité"
+db.define_table('porteur', Field('nom'), Field('prenom'), Field('mail'))
 
 # TABLE ETAT DOSSIER
-db.define_table('etat_dossier',Field('nom'))
+db.define_table('etat_dossier',Field('nom'), format='%(nom)s')
 
 # TABLE DOSSIER : UN DOSSIER LIE A UN UTILISATEUR
 db.define_table('dossier',
 Field('intitule'), Field('urgent', 'boolean'), Field('caractere_urgent'), Field('remplacement_materiel','boolean'), Field('reference_materiel'),
-Field('description','text'), Field('beneficiaires'), Field('mailResponsable'), Field('mailGestionnaire'), Field('achat_courant','boolean'), Field('user_id','reference auth_user'),Field('porteur_id','reference porteur',writable=False,readable=False), Field('etat_dossier_id','reference etat_dossier',writable=False,readable=False), Field('commentaire','text')  )
+Field('description','text'), Field('beneficiaires'), Field('mailResponsable'), Field('mailGestionnaire'), Field('achat_courant','boolean'), Field('user_id','reference auth_user'),Field('porteur_id','reference porteur',writable=False,readable=False), Field('etat_dossier_id','reference etat_dossier',writable=False,readable=False), Field('commentaire','text'),Field('date_dossier','datetime',writable=False, requires = IS_DATETIME(format=('%d/%m/%Y à %H:%M:%S'))), Field('entite_id','reference entite'))
+
+db.dossier.entite_id.label="Entité"
 
 db.dossier.user_id.requires=IS_EMPTY_OR(IS_IN_DB(db,'auth_user.id',))
 db.dossier.intitule.requires=IS_NOT_EMPTY()

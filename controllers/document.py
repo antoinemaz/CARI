@@ -16,7 +16,7 @@ def gestionPjs():
           rowDossier = projetService.getDossierById(idDossier)
           rowPorteur = porteurService.getPorteurById(rowDossier.porteur_id)
     
-          isRepresentant = groupService.isRepresentantOfDossier(session, rowPorteur.entite_id)
+          isRepresentant = groupService.isRepresentantOfDossier(session, rowDossier.entite_id)
           isPresident = session.auth.user.group_id == Constantes.PRESIDENT
           isDemandeur = rowDossier.user_id == session.auth.user.id
         
@@ -53,7 +53,7 @@ def addPJs():
           rowDossier = projetService.getDossierById(idDossier)
           rowPorteur = porteurService.getPorteurById(rowDossier.porteur_id)
     
-          isRepresentant = groupService.isRepresentantOfDossier(session, rowPorteur.entite_id)
+          isRepresentant = groupService.isRepresentantOfDossier(session, rowDossier.entite_id)
           isPresident = session.auth.user.group_id == Constantes.PRESIDENT
           isDemandeur = rowDossier.user_id == session.auth.user.id
         

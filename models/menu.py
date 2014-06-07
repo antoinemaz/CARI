@@ -13,3 +13,4 @@ response.menu += [('Gestion des entités', URL()==URL('compte', 'gestionEntites'
 response.menu += [('Gestion des budgets', URL()==URL('budget', 'gestionBudgets'), URL('budget', 'gestionBudgets'),[])]
 response.menu += [('Profil', URL()==URL('default', 'user/profile'), URL('default', 'user/profile'),[])]
 response.menu += [('Se déconnecter', URL()==URL('default', 'user/logout'), URL('default', 'user/logout'),[])]
+response.menu += [('Liste des projets', URL()==URL('listeProjets', 'projets'), URL('listeProjets', 'projets'),[])]

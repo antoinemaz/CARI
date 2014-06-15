@@ -65,3 +65,18 @@ class mailService(object):
         mail.send(to=[dossier.mailResponsable], cc=[dossier.mailGestionnaire], subject='Soumission d\'une nouvelle demande',message=msgResponsable)
         for pres in userService.getPresidents():
               mail.send(to=[pres.email], subject='Soumission d\'une nouvelle demande',message=msgPresident)
+                
+                
+                
+    @staticmethod
+    def sendMailNewUser(prenom, nom, email,mdp):
+        from gluon.tools import Mail
+        mail = Mail()
+        mail.settings.server = 'gae'
+        mail.settings.server = 'smtp.gmail.com:587'
+        mail.settings.sender = 'antoine.mazelin@gmail.com'
+        mail.settings.login = 'antoine.mazelin@gmail.com:monamour91'
+        
+        msgUser = 'Bonjour '+str(prenom)+' '+str(nom)+',\n\n Un compte a été créé dans le gestionnaire des dossiers CARI. Voici l\'URL : '+ str(request.env.http_host+'/'+request.application)+'.\n\n Votre identifiant est votre adresse mail et votre mot de passe est : '+ str(mdp)+' Il faudra modifier votre mot de passe lors de votre première connexion.'
+
+        mail.send(to=[email], subject='Création de votre compte CARI',message=msgUser)

@@ -1,6 +1,13 @@
 {{extend 'layout.html'}}
+
     <div class="titreGestion">Gestion des projets</div>
      <div class="divOfBouton">
-         {{=A('Ajouter un budget',_href=URL('projet','addProjet'),cid=request.cid, _class='styleBouton addButton')}}
+         {{=A('Ajouter un projet',_href=URL('projet','addProjet'),cid=request.cid, _class='styleBouton addButton')}}
+         
+         {{=LOAD('listeProjets','rechercheDossier',ajax_trap=True)}}
+         <div id="dossierTrouve">
+             {{=formRecherche.vars.numDossier}}
+         </div>
+         
          {{=gridProjets}}
     </div>

@@ -40,12 +40,19 @@ class projetService(object):
     def getQueryOfDossier(session):
        
           isPresident = session.auth.user.group_id == Constantes.PRESIDENT
+          isRepresentant = session.auth.user.group_id == Constantes.REPRESENTANT
+        
+          user = userService.getInfosUser(session.auth.user.id)
         
           if(isPresident):
             queryFinal = db.dossier
           else:
             query1 = db.dossier.user_id==session.auth.user.id
-            query2 = db.dossier.porteur.id == db.dossier.porteur_id & session.auth.user.entite_id == db.porteur.entite_id
-            queryFinal = db(query1 | query2)
+            
+            query2 = None
+            if(isRepresentant):
+                query2 = db.dossier.entite_id == user.entite_id
+                
+            queryFinal = query1 | query2
 
           return queryFinal

@@ -76,11 +76,11 @@ def addProjet():
         form.vars.beneficiaires = rowDossier.beneficiaires
         form.vars.achat_courant = rowDossier.achat_courant
         form.vars.mailResponsable = rowDossier.mailResponsable
-        form.vars.mailGestionnaire = rowDossier.mailGestionnaire 
+        form.vars.mailGestionnaire = rowDossier.mailGestionnaire
         form.vars.nom = rowPorteur.nom
         form.vars.prenom = rowPorteur.prenom
         form.vars.mail = rowPorteur.mail
-        form.vars.entite_id = rowPorteur.entite_id
+        form.vars.entite_id = rowDossier.entite_id
         form.vars.id = rowDossier.id
         formAdmin.vars.commentaire = rowDossier.commentaire
         form.vars.commentaire = rowDossier.commentaire

@@ -53,6 +53,10 @@ db.auth_user.id.readable = False
 auth.settings.actions_disabled.append('register')
 
 auth.settings.login_next = URL('index')
+auth.settings.profile_next = URL('profile')
+auth.settings.change_password_next = URL('profile')
+
+auth.settings.password_min_length = 1
 
 # TABLE PORTEUR
 db.define_table('porteur', Field('nom'), Field('prenom'), Field('mail'))

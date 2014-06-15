@@ -25,15 +25,23 @@ def addUser():
    # ROLE ET COMPOSANTE DES UTILISATEURS MODIFIABLE : METHODE DEFINIT dans db.py
    userService.readonlyUser(True, True)
 
+   db.auth_user.password.readable = False
+   db.auth_user.password.writable = False 
+    
     # CREATION DU FORMULAIRE D'AJOUT D'UN UTILISATEUR
    form = SQLFORM(db.auth_user)
-
+    
     # SI LE FORMULAIRE EST SOUMIS
    if form.process().accepted:
+      
+       mdp = userService.initPassword(form.vars.id)
+       
         # INSERTION EN BASE
        response.flash = 'form accepted'
 
        groupService.inserMembership(form.vars.id, form.vars.group_id)
+        
+       mailService.sendMailNewUser(form.vars.first_name, form.vars.last_name, form.vars.email,mdp)
         
        # PUIS ON REDIRIGE VERS LA PAGE DE GESTION DES UTILISATEURS
        redirect(URL('gestionUsers'))
@@ -69,3 +77,10 @@ def addEntite():
        response.flash = 'please fill out the form'
 
     return locals()
+
+def profile():
+       userService.readonlyUser(True,False)
+       return dict(form=auth.profile())
+    
+def password():
+       return dict(form=auth.change_password())

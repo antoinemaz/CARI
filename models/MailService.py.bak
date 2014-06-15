@@ -56,12 +56,27 @@ class mailService(object):
                             # Message aux demandeur et porteur
             msgDemandeur = 'Bonjour '+demandeur.first_name+' '+demandeur.last_name +'.\n\nLe commentaire de votre dossier n°'+ str(dossier.id)+' a été mis modifié.\n\n Voici le commentaire du dossier : \n\n'+dossier.commentaire
             # Message aux représentant et au gestionnaire
-            msgResponsable = 'Bonjour, \n\Le commentaire du dossier n°'+ str(dossier.id)+' a été modifié.\n\nVoici le commentaire du dossier : \n\n'+dossier.commentaire
+            msgResponsable = 'Bonjour, \n\nLe commentaire du dossier n°'+ str(dossier.id)+' a été modifié.\n\nVoici le commentaire du dossier : \n\n'+dossier.commentaire
             # Message au président
-            msgPresident = 'Bonjour, \n\Le commentaire du dossier n°'+ str(dossier.id)+' a été modifié.\n\nVoici le commentaire du dossier : \n\n'+dossier.commentaire
+            msgPresident = 'Bonjour, \n\nLe commentaire du dossier n°'+ str(dossier.id)+' a été modifié.\n\nVoici le commentaire du dossier : \n\n'+dossier.commentaire
                 
          # Envoi des mails
         mail.send(to=[demandeur.email], cc=[porteur.mail], subject='Soumission de votre demande',message=msgDemandeur)
         mail.send(to=[dossier.mailResponsable], cc=[dossier.mailGestionnaire], subject='Soumission d\'une nouvelle demande',message=msgResponsable)
         for pres in userService.getPresidents():
               mail.send(to=[pres.email], subject='Soumission d\'une nouvelle demande',message=msgPresident)
+                
+                
+                
+    @staticmethod
+    def sendMailNewUser(prenom, nom, email):
+        from gluon.tools import Mail
+        mail = Mail()
+        mail.settings.server = 'gae'
+        mail.settings.server = 'smtp.gmail.com:587'
+        mail.settings.sender = 'antoine.mazelin@gmail.com'
+        mail.settings.login = 'antoine.mazelin@gmail.com:monamour91'
+        
+        msgUser = 'Bonjour '+str(prenom)+' '+str(nom)+',\n\n Un compte a été créé dans le gestionnaire des dossiers CARI. Voici l\'URL : '+ str(request.env.http_host+'/'+request.application)+'.\n\n Votre identifiant est votre adresse mail et votre mot de passe est : '+ str(nom)+' Il faudra modifier votre mot de passe lors de votre première connexion.'
+
+        mail.send(to=[email], subject='Création de votre compte CARI',message=msgUser)

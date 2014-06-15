@@ -1,0 +1,8 @@
+{{extend 'layout.html'}}
+
+<div id="user">
+        <div class="divOfBouton">
+        {{=A('Changer son mot de passe', _class='styleBouton', _href=URL('password', vars=dict()), cid=request.cid)}}
+    </div>
+    {{=form}}
+</div>

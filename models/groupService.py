@@ -2,13 +2,13 @@
 class groupService(object):
 
     @staticmethod
-    def isRepresentantOfDossier(mySession, entitePorteurId):
+    def isRepresentantOfDossier(mySession, entiteId):
         query = db(db.auth_user.group_id==Constantes.REPRESENTANT).select(db.auth_user.id)
     
         find = False;
     
         for row in query:
-            if row.id==mySession.auth.user.id and entitePorteurId == mySession.auth.user.entite_id:
+            if row.id==mySession.auth.user.id and entiteId == mySession.auth.user.entite_id:
                 find=True
                 break
     

@@ -25,6 +25,10 @@ def addProjet():
     if idDossier is not None:
           
           rowDossier = projetService.getDossierById(idDossier)
+           
+          if rowDossier is None:
+                redirect(URL('default','index'))
+            
           rowPorteur = porteurService.getPorteurById(rowDossier.porteur_id)
 
           user = userService.getInfosUser(rowDossier.user_id)

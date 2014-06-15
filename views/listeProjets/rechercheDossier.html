@@ -1,0 +1,15 @@
+{{=formRecherche}}
+
+{{if recherche == True:}}
+<div>
+    {{if rowTrouve == True:}}
+        <div>
+            Un dossier a été trouvé avec le numéro de dossier {{=row.id}}.
+            {{=A("Cliquer ici pour voir le détail du dossier", _href=URL("projet", "addProjet", vars=dict(idDossier=row.id)))}}
+        </div>
+        
+    {{else:}}
+        Aucun résultat
+    {{pass}}
+</div>
+{{pass}}

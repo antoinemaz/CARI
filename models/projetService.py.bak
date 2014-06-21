@@ -25,10 +25,9 @@ class projetService(object):
 
         if etat_id is not None and etat_id != 0 and etat_id != '0':
               projetService.updateEtat(etat_id,idDossier)
-              rowDos.update_record(etat_dossier_id= etat_id)
 
-              if etat_id == Constantes.ACCEPTE:
-                  achatService.updateBudgetOfProduitsDuDossier(idDossier)
+              if etat_id == '4':
+                  achatService.updateBudgetOfProduitsDuDossier(rowDos)
 
     @staticmethod
     def updateEtat(etat_id, idDossier):
@@ -53,6 +52,6 @@ class projetService(object):
             if(isRepresentant):
                 query2 = db.dossier.entite_id == user.entite_id
                 
-            queryFinal = query1 & query2
+            queryFinal = query1 | query2
 
           return queryFinal

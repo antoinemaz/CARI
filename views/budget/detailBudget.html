@@ -1,0 +1,60 @@
+{{extend 'layout.html'}}
+
+<div class="gestion">
+    <div class="titreGestion">Détail budget</div>
+    
+         <div class="divOfBouton">
+            {{=A('Retour', _class='styleBouton' ,_href=URL('budget', 'gestionBudgets',vars=dict()),cid=request.cid)}}
+        </div>   
+    
+
+        <div class="formStyle divInfoUser">
+        <div class="center divTitre">Informations du budget</div>
+        <table>
+            <tr>
+                <td class="bleu">Nom de l'entite : </td>
+                <td>{{=nameOfEntite}}</td>
+            </tr>
+            <tr>
+                <td class="bleu">Budget : </td>
+                <td>{{=rowBudget.budget_initial}} €</td>
+            </tr>
+            <tr>
+                <td class="bleu">Date : </td>
+                <td>{{=rowBudget.date_budget}}</td>
+            </tr>
+    
+            </table>
+            
+</div>    
+
+    
+    <div class="web2py_grid ui-widget gridBudget">
+        <table>
+            <thead>
+            <TR  class="ui-widget-header"><TH class="ui-state-default">Nom du produit</TH><TH class="ui-state-default">Date d'achat</TH><TH class="ui-state-default">Prix Unitaire</TH><TH class="ui-state-default">Quantite</TH><TH class="ui-state-default">Montant total</TH></TR>
+        {{for row in rows: }}
+            </thead>
+            <tr>
+                <td>
+                    {{=row.libelle}}
+                </td>
+               <td>
+                    {{=row.date_achat}}
+                </td>
+                <td>
+                    {{=row.prix_unitaire}}
+                </td>
+                <td>
+                    {{=row.qte}}
+                </td>
+                <td>
+                    {{=row.Total}}
+                </td>
+            </tr>
+        {{pass}}
+        
+        </table>
+    </div>
+        
+</div>

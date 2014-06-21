@@ -294,7 +294,7 @@ a:hover{
 }
 
 .styleBouton{
-    background-color: #FFFFFF;
+    background-color: #F3F3F3;
     border: 1px solid #B3BAED;
     border-radius: 7px;
     padding: 5px;
@@ -320,4 +320,23 @@ a:hover{
 .addBouton{
     margin-bottom: 5px;
     margin-top: 5px;
+}
+
+/* BUDGET */
+
+.gridBudget th{
+    color: #18447A;
+}
+
+.titreBudget{
+    font-size: 15px;
+    font-weight: bold;
+    text-align: center;
+    color: #18447A;
+    border: 1px solid #18447A;
+    border-radius: 14px;
+    background-color: #EAEAEA;
+    width: 350px;
+    margin: 0 auto;
+    margin-top: 26px;
 }

@@ -1,19 +1,23 @@
 # coding: utf8
 from gluon.tools import Auth
-
 # INSTANCE D'UNE CONNEXION BDD
 db = DAL('mysql://root@localhost/cari')
 
 # TABLE COMPOSANTE
 db.define_table('entite', Field('name'), format='%(name)s')
 
+db.entite.name.requires=IS_NOT_EMPTY()
+
 # ID DES ENTITES INVISIBLES DANS LES FORMULAIRES
 db.entite.id.readable = False
 
 # TABLE BUDGET LIE A UNE ENTITE
-db.define_table('budget', Field('date_budget','date'), Field('budget_initial','double'), Field('entite_id','reference entite'))
+db.define_table('budget', Field('date_budget','date',requires = IS_DATE(format=('%d/%m/%Y'))), Field('budget_initial','double'), Field('entite_id','reference entite'))
 
 db.budget.entite_id.label="Entité"
+db.budget.budget_initial.label='Budget initial'
+db.budget.date_budget.label='Date'
+
 
 # GESTION DE LA TABLE DES UTILISATEURS : MODIFICATION DES TABLES DES USERS DE WEB2PY
 auth = Auth(db)
@@ -58,8 +62,15 @@ auth.settings.change_password_next = URL('profile')
 
 auth.settings.password_min_length = 1
 
+mailService.settingMail()
+auth.messages.reset_password_subject = 'Choisir un autre mot de passe'
+auth.messages.reset_password = 'Bonjour, \n\n veuillez cliquer sur le lien suivant pour choisir un autre mot de passe :  http://' +     request.env.http_host +     URL(r=request,c='default',f='user',args=['reset_password']) +     '/%(key)s'
+
 # TABLE PORTEUR
 db.define_table('porteur', Field('nom'), Field('prenom'), Field('mail'))
+
+db.porteur.nom.requires=IS_NOT_EMPTY()
+db.porteur.mail.requires=IS_EMPTY_OR(IS_EMAIL())
 
 # TABLE ETAT DOSSIER
 db.define_table('etat_dossier',Field('nom'), format='%(nom)s')
@@ -74,6 +85,11 @@ db.dossier.entite_id.label="Entité"
 db.dossier.user_id.requires=IS_EMPTY_OR(IS_IN_DB(db,'auth_user.id',))
 db.dossier.intitule.requires=IS_NOT_EMPTY()
 db.dossier.beneficiaires.requires=IS_NOT_EMPTY()
+db.dossier.intitule.requires=IS_NOT_EMPTY()
+db.dossier.description.requires=IS_NOT_EMPTY()
+db.dossier.beneficiaires.requires=IS_NOT_EMPTY()
+db.dossier.mailResponsable.requires=IS_EMAIL()
+db.dossier.mailGestionnaire.requires=IS_EMPTY_OR(IS_EMAIL())
 
 db.dossier.mailResponsable.label='Email du responsable'
 db.dossier.mailGestionnaire.label='Email du gestionnaire'
@@ -88,8 +104,10 @@ db.achat.prix_unitaire.represent = lambda name,row: str(name) +' €'
 db.achat.Total.represent = lambda name,row: str(name) +' €'
 
 db.achat.prix_unitaire.requires=IS_NOT_EMPTY()
-db.achat.qte.requires=IS_NOT_EMPTY()
+db.achat.qte.requires=IS_INT_IN_RANGE()
+db.achat.qte.prix_unitaire=IS_DECIMAL_IN_RANGE(dot=",")
 db.achat.date_achat.requires=IS_NOT_EMPTY()
+db.achat.libelle.requires=IS_NOT_EMPTY()
 
 db.achat.id.readable = False
 db.achat.id.writable = False
@@ -101,6 +119,8 @@ db.achat.entite_id.label = "Budget"
 
 db.define_table('piece_jointe',
     Field('file_uid', 'upload',autodelete=True), Field('file_name', 'text'),Field('id_dossier','integer'))
+
+db.piece_jointe.file_uid.requires = IS_UPLOAD_FILENAME()
 
 db.piece_jointe.id_dossier.readable = False
 db.piece_jointe.id_dossier.writable = False

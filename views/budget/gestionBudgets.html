@@ -1,8 +1,49 @@
 {{extend 'layout.html'}}
 <div class="gestion">
     <div class="titreGestion">Gestion des budgets</div>
+    
+    <ul class="addButton"><li>{{=A('Ajouter un budget',_href=URL('addBudget'),cid=request.cid, _class='linkAction inline')}}</li></ul>
+    <ul class="addButton"><li>{{=A('Exporter vers Excel', callback=URL('export2Budget'))}}</li></ul>
+    
+    <div class="web2py_grid ui-widget gridBudget">
 
-    <div class='divOfBouton'>
-       {{=A('Ajouter un budget',_href=URL('addBudget'),cid=request.cid, _class='styleBouton addButton')}}
+        <div class="titreBudget">Budgets en cours</div>
+        
+      <table>
+          <thead>
+                      <TR class="ui-widget-header"><TH class="ui-state-default">Entité</TH><TH class="ui-state-default">Date</TH><TH class="ui-state-default">Budget initial</TH><TH class="ui-state-default"></TH></TR>
+          </thead>
+
+        {{for row in newBudgets: }}
+            <tr>
+                <td>
+                    {{=entiteService.getNameOfEntite(row.get('entite_id'))}}
+                </td>
+                <td>
+                    {{
+                        strDate = str(row.get('date_budget'))
+                        from datetime import datetime
+                        d = datetime.strptime(strDate, '%Y-%m-%d')
+                        day_string = d.strftime('%d/%m/%Y')
+                    }}
+                    {{=day_string}}
+                </td>
+                <td>
+                    {{=row.get('budget_initial')}}
+                </td>
+                <td>
+                    {{=A('Detail', _href=URL("budget","detailBudget",vars=dict(idBudget=row.get('id'))))}}
+                </td>
+            </tr>
+        {{pass}}
+        
+        
+    </table>
+
+        
     </div>
+
+        <div class="titreBudget">Historique des budgets</div>
+        {{=gridAllBudget}}
+    
 </div>

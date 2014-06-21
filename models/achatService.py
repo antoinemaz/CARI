@@ -2,10 +2,9 @@
 class achatService(object):
     
     @staticmethod
-    def updateBudgetOfProduitsDuDossier(idDossier):
+    def updateBudgetOfProduitsDuDossier(dossier):
     
-        rowPorteur = porteurService.getPorteurById(idDossier)
-        rowBudgets = db(db.budget.entite_id == rowPorteur.entite_id).select()
+        rowBudgets = db(db.budget.entite_id == dossier.entite_id).select()
         
         dateBudget = None
         rowBudget = None
@@ -13,7 +12,7 @@ class achatService(object):
             if dateBudget == None or dateBudget <= row.budget_initial:
                 rowBudget = row
         
-        rowAchats = db(db.achat.dossier_id == idDossier).select()
+        rowAchats = db(db.achat.dossier_id == dossier.id).select()
     
         if rowBudget != None:
            for row in rowAchats:

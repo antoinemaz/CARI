@@ -1,6 +1,6 @@
 {{=formRecherche}}
 
-{{if recherche == True}}
+{{if recherche == True:}}
 <div>
     {{if rowTrouve == True:}}
         <div>

@@ -13,6 +13,10 @@ def gestionProduits():
           gestionProduits = True
         
           rowDossier = projetService.getDossierById(idDossier)
+
+          if rowDossier is None:
+               redirect(URL('default','index'))   
+            
           rowPorteur = porteurService.getPorteurById(rowDossier.porteur_id)
     
           isRepresentant = groupService.isRepresentantOfDossier(session, rowDossier.entite_id)
@@ -49,8 +53,12 @@ def addProduits():
     if idDossier is not None:
               
           rowDossier = projetService.getDossierById(idDossier)
-          rowPorteur = porteurService.getPorteurById(rowDossier.porteur_id)
     
+          if rowDossier is None:
+                redirect(URL('default','index'))
+
+          rowPorteur = porteurService.getPorteurById(rowDossier.porteur_id)
+                    
           isRepresentant = groupService.isRepresentantOfDossier(session, rowDossier.entite_id)
           isPresident = session.auth.user.group_id == Constantes.PRESIDENT
           isDemandeur = rowDossier.user_id == session.auth.user.id

@@ -2,13 +2,18 @@
 class mailService(object):
     
     @staticmethod
-    def sendMail(idDossier, etatAvantUpdate,request):
+    def settingMail():
         from gluon.tools import Mail
         mail = Mail()
-        mail.settings.server = 'gae'
+        mail = auth.settings.mailer
+        #mail.settings.server = 'gae'
         mail.settings.server = 'smtp.gmail.com:587'
         mail.settings.sender = 'antoine.mazelin@gmail.com'
         mail.settings.login = 'antoine.mazelin@gmail.com:monamour91'
+        return mail
+    
+    @staticmethod
+    def sendMail(idDossier, etatAvantUpdate,request):
         
         dossier = projetService.getDossierById(idDossier)
         demandeur = userService.getInfosUser(dossier.user_id)
@@ -17,66 +22,83 @@ class mailService(object):
         msgDemandeur = None
         msgResponsable = None
         msgPresident = None
-                
+
+        sujet=''
+        
+        finDePhrase = '\n\nLe numéro du dossier est le suivant : '+ str(dossier.id)+'.\nLe lien de la demande est le suivant : '+ str(request.env.http_host+"/"+request.application+"/projet/addProjet/")+''+'idDossier='+str(dossier.id)+'.'
+        
         if(etatAvantUpdate != dossier.etat_dossier_id):
             
             if (dossier.etat_dossier_id == Constantes.SOUMIS):
+                
+                sujet = 'Soumission d\'une nouvelle demande'
+                
                 # Message aux demandeur et porteur
-                msgDemandeur = 'Bonjour '+demandeur.first_name+' '+demandeur.last_name +'.\n\nVotre demande a bien été soumise. \n\nElle est actuellement en cours de traitement. Le numéro du dossier est le suivant : '+ str(dossier.id)+'.\nLe lien de la demande est la suivante : '+ str(request.env.http_host+"/"+request.application+"/projet/addProjet/")+''+'idDossier='+str(dossier.id)+'.'
+                msgDemandeur = 'Bonjour \n\n  '+demandeur.first_name+' '+demandeur.last_name +'.\n\nVotre demande a bien été soumise. \n\nElle est actuellement en cours de traitement.'+finDePhrase
                 # Message aux représentant et au gestionnaire
-                msgResponsable = 'Bonjour, \n\nUne demande a été soumise \n\nLe numéro du dossier est le suivant : '+ str(dossier.id)+'.'
+                msgResponsable = 'Bonjour, \n\n Une demande a été soumise.'+finDePhrase
                 # Message au président
-                msgPresident = 'Bonjour, \n\n Une demande a été soumise \n\nLe numéro du dossier est le suivant : '+ str(dossier.id)+'.'
+                msgPresident = 'Bonjour, \n\n Une demande a été soumise.'+finDePhrase
             
             if (dossier.etat_dossier_id == Constantes.ACCEPTE):
+                
+                sujet = 'Dossier accepté'
+                
                 # Message aux demandeur et porteur
-                msgDemandeur = 'Bonjour '+demandeur.first_name+' '+demandeur.last_name +'.\n\nLe dossier n°'+ str(dossier.id)+' a été acceptée.\n\n Voici le commentaire ajouté au dossier : \n\n'+dossier.commentaire
+                msgDemandeur = 'Bonjour '+demandeur.first_name+' '+demandeur.last_name +'.\n\nLe dossier n°'+ str(dossier.id)+' a été acceptée.'+finDePhrase
                 # Message aux représentant et au gestionnaire
-                msgResponsable = 'Bonjour, \n\Le dossier n°'+ str(dossier.id)+' a été acceptée.\n\n Voici le commentaire ajouté au dossier : \n\n'+dossier.commentaire
+                msgResponsable = 'Bonjour, \n\Le dossier n°'+ str(dossier.id)+' a été acceptée.'+finDePhrase
                 # Message au président
-                msgPresident = 'Bonjour, \n\Le dossier n°'+ str(dossier.id)+' a été acceptée.\n\nVoici le commentaire ajouté au dossier : \n\n'+dossier.commentaire
+                msgPresident = 'Bonjour, \n\Le dossier n°'+ str(dossier.id)+' a été acceptée.'+finDePhrase
                 
             if (dossier.etat_dossier_id == Constantes.REFUSE):
+                
+                sujet = 'Dossier refusée'
+                
                 # Message aux demandeur et porteur
-                msgDemandeur = 'Bonjour '+demandeur.first_name+' '+demandeur.last_name +'.\n\nLe dossier n°'+ str(dossier.id)+' a été refusé.\n\n Voici le commentaire ajouté au dossier : \n\n'+dossier.commentaire
+                msgDemandeur = 'Bonjour '+demandeur.first_name+' '+demandeur.last_name +'.\n\nLe dossier n°'+ str(dossier.id)+' a été refusé.'+finDePhrase
                 # Message aux représentant et au gestionnaire
-                msgResponsable = 'Bonjour, \n\Le dossier n°'+ str(dossier.id)+' a été refusé.\n\nVoici le commentaire ajouté au dossier : \n\n'+dossier.commentaire
+                msgResponsable = 'Bonjour, \n\nLe dossier n°'+ str(dossier.id)+' a été refusé.'+finDePhrase
                 # Message au président
-                msgPresident = 'Bonjour, \n\Le dossier n°'+ str(dossier.id)+' a été refusé.\n\nVoici le commentaire ajouté au dossier : \n\n'+dossier.commentaire
+                msgPresident = 'Bonjour, \n\nLe dossier n°'+ str(dossier.id)+' a été refusé.'+finDePhrase
                 
             if (dossier.etat_dossier_id == Constantes.ATTENTE):
+                
+                sujet = 'Dossier en attente'
+                
                 # Message aux demandeur et porteur
-                msgDemandeur = 'Bonjour '+demandeur.first_name+' '+demandeur.last_name +'.\n\nLe dossier n°'+ str(dossier.id)+' a été mis en attente.\n\n Voici le commentaire ajouté au dossier : \n\n'+dossier.commentaire
+                msgDemandeur = 'Bonjour '+demandeur.first_name+' '+demandeur.last_name +'.\n\nLe dossier n°'+ str(dossier.id)+' a été mis en attente.'+finDePhrase
                 # Message aux représentant et au gestionnaire
-                msgResponsable = 'Bonjour, \n\Le dossier n°'+ str(dossier.id)+' a été mis en attente.\n\nVoici le commentaire ajouté au dossier : \n\n'+dossier.commentaire
+                msgResponsable = 'Bonjour, \n\Le dossier n°'+ str(dossier.id)+' a été mis en attente.'+finDePhrase
                 # Message au président
-                msgPresident = 'Bonjour, \n\Le dossier n°'+ str(dossier.id)+' a été mis en attente.\n\nVoici le commentaire ajouté au dossier : \n\n'+dossier.commentaire
+                msgPresident = 'Bonjour, \n\Le dossier n°'+ str(dossier.id)+' a été mis en attente.'+finDePhrase
 
         else:
+            
+            sujet = 'Commentaire modifié d\'un dossier'
+            
                             # Message aux demandeur et porteur
-            msgDemandeur = 'Bonjour '+demandeur.first_name+' '+demandeur.last_name +'.\n\nLe commentaire de votre dossier n°'+ str(dossier.id)+' a été mis modifié.\n\n Voici le commentaire du dossier : \n\n'+dossier.commentaire
+            msgDemandeur = 'Bonjour '+demandeur.first_name+' '+demandeur.last_name +'.\n\nLe commentaire de votre dossier n°'+ str(dossier.id)+' a été mis modifié.\n\n Voici le commentaire du dossier : \n\n'+dossier.commentaire+finDePhrase
             # Message aux représentant et au gestionnaire
-            msgResponsable = 'Bonjour, \n\nLe commentaire du dossier n°'+ str(dossier.id)+' a été modifié.\n\nVoici le commentaire du dossier : \n\n'+dossier.commentaire
+            msgResponsable = 'Bonjour, \n\nLe commentaire du dossier n°'+ str(dossier.id)+' a été modifié.\n\nVoici le commentaire du dossier : \n\n'+dossier.commentaire+finDePhrase
             # Message au président
-            msgPresident = 'Bonjour, \n\nLe commentaire du dossier n°'+ str(dossier.id)+' a été modifié.\n\nVoici le commentaire du dossier : \n\n'+dossier.commentaire
-                
+            msgPresident = 'Bonjour, \n\nLe commentaire du dossier n°'+ str(dossier.id)+' a été modifié.\n\nVoici le commentaire du dossier : \n\n'+dossier.commentaire+finDePhrase
+         
+        mailSender = mailService.settingMail()
          # Envoi des mails
-        mail.send(to=[demandeur.email], cc=[porteur.mail], subject='Soumission de votre demande',message=msgDemandeur)
-        mail.send(to=[dossier.mailResponsable], cc=[dossier.mailGestionnaire], subject='Soumission d\'une nouvelle demande',message=msgResponsable)
+        mailSender.send(to=[demandeur.email], cc=[str(porteur.mail)], subject=sujet,message=msgDemandeur)
+        mailSender = mailService.settingMail()
+        mailSender.send(to=[str(dossier.mailResponsable)], cc=[str(dossier.mailGestionnaire)], subject=sujet,message=msgResponsable)
         for pres in userService.getPresidents():
-              mail.send(to=[pres.email], subject='Soumission d\'une nouvelle demande',message=msgPresident)
+              mailSender = mailService.settingMail()
+              mailSender.send(to=[pres.email], subject=sujet,message=msgPresident)
                 
                 
                 
     @staticmethod
-    def sendMailNewUser(prenom, nom, email):
-        from gluon.tools import Mail
-        mail = Mail()
-        mail.settings.server = 'gae'
-        mail.settings.server = 'smtp.gmail.com:587'
-        mail.settings.sender = 'antoine.mazelin@gmail.com'
-        mail.settings.login = 'antoine.mazelin@gmail.com:monamour91'
+    def sendMailNewUser(prenom, nom, email,mdp):
         
-        msgUser = 'Bonjour '+str(prenom)+' '+str(nom)+',\n\n Un compte a été créé dans le gestionnaire des dossiers CARI. Voici l\'URL : '+ str(request.env.http_host+'/'+request.application)+'.\n\n Votre identifiant est votre adresse mail et votre mot de passe est : '+ str(nom)+' Il faudra modifier votre mot de passe lors de votre première connexion.'
+        msgUser = 'Bonjour '+str(prenom)+' '+str(nom)+',\n\n Un compte a été créé dans le gestionnaire des dossiers CARI. Voici l\'URL : '+ str(request.env.http_host+'/'+request.application)+'.\n\n Votre identifiant est votre adresse mail et votre mot de passe est : '+ str(mdp)+' Il faudra modifier votre mot de passe lors de votre première connexion.'
 
-        mail.send(to=[email], subject='Création de votre compte CARI',message=msgUser)
+        mailSender = mailService.settingMail()
+        mailSender.send(to=[email], subject='Création de votre compte CARI',message=msgUser)

@@ -3,7 +3,7 @@
     <div id="logo">
         
          <img src="{{=URL('static', 'images/logoCARI.png')}}" />
-        
+        <!-- {{=response.toolbar()}} -->
         <div id="titre">
             Conseil administratif des ressources informatiques
         </div>

@@ -6,5 +6,5 @@ def index():
     return dict()
 
 # PAGE DE CONNEXION DES UTILISATEURS
-def user():
+def user():    
     return dict(form=auth())

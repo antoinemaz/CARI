@@ -2,9 +2,9 @@
 class achatService(object):
     
     @staticmethod
-    def updateBudgetOfProduitsDuDossier(idDossier):
+    def updateBudgetOfProduitsDuDossier(dossier):
     
-        rowPorteur = getPorteurById(idDossier)
+        rowPorteur = porteurService.getPorteurById(idDossier)
         rowBudgets = db(db.budget.entite_id == rowPorteur.entite_id).select()
         
         dateBudget = None

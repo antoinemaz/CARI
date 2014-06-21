@@ -25,10 +25,9 @@ class projetService(object):
 
         if etat_id is not None and etat_id != 0 and etat_id != '0':
               projetService.updateEtat(etat_id,idDossier)
-              rowDos.update_record(etat_dossier_id= etat_id)
 
-              if etat_id == Constantes.ACCEPTE:
-                  achatService.updateBudgetOfProduitsDuDossier(idDossier)
+              if etat_id == str(Constantes.ACCEPTE):
+                  achatService.updateBudgetOfProduitsDuDossier(rowDos)
 
     @staticmethod
     def updateEtat(etat_id, idDossier):

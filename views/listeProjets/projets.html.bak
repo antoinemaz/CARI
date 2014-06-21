@@ -6,7 +6,7 @@
          
          {{=LOAD('listeProjets','rechercheDossier',ajax_trap=True)}}
          <div id="dossierTrouve">
-             {{=formRecherche.vars.numDossier}}
+             
          </div>
          
          {{=gridProjets}}

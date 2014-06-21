@@ -14,6 +14,10 @@ def gestionPjs():
           gestionPJs = True
         
           rowDossier = projetService.getDossierById(idDossier)
+
+          if rowDossier is None:
+                redirect(URL('default','index'))
+            
           rowPorteur = porteurService.getPorteurById(rowDossier.porteur_id)
     
           isRepresentant = groupService.isRepresentantOfDossier(session, rowDossier.entite_id)
@@ -51,6 +55,10 @@ def addPJs():
     if idDossier is not None:
               
           rowDossier = projetService.getDossierById(idDossier)
+            
+          if rowDossier is None:
+               redirect(URL('default','index'))
+            
           rowPorteur = porteurService.getPorteurById(rowDossier.porteur_id)
     
           isRepresentant = groupService.isRepresentantOfDossier(session, rowDossier.entite_id)
@@ -71,8 +79,10 @@ def addPJs():
     # ON SPECIFIE L'ID DU DOSSIER AU PROJET
     form.vars.id_dossier = request.vars.idDossier
     
-    if request.vars.file_uid!=None:
+    if request.vars.file_uid!=None and hasattr(request.vars.file_uid, 'filename'):
          form.vars.file_name = request.vars.file_uid.filename
+    else:
+        redirect(URL('gestionPjs',vars=dict(idDossier=request.vars.idDossier)))
     
     # SI LE FORMULAIRE EST SOUMIS
     if form.process().accepted:

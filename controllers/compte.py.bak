@@ -79,8 +79,11 @@ def addEntite():
     return locals()
 
 def profile():
-       readonlyUser(True,False)
+       userService.readonlyUser(True,False)
        return dict(form=auth.profile())
     
 def password():
        return dict(form=auth.change_password())
+
+def reset_password():
+    return dict(form=auth.reset_password())

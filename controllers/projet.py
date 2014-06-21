@@ -59,7 +59,10 @@ def addProjet():
                     options = {OPTION('', _value=0),
                                OPTION(Constantes.ACCEPTE_TXT, _value=Constantes.ACCEPTE),
                                OPTION(Constantes.REFUSE_TXT, _value=Constantes.REFUSE)}
-                          
+            
+            if(rowDossier.etat_dossier_id == Constantes.ACCEPTE or rowDossier.etat_dossier_id == Constantes.REFUSE):
+                options = {OPTION('', _value=0)}
+            
             if not options:
                 select = ''
                 select_libelle = ''
@@ -67,7 +70,11 @@ def addProjet():
                 select = SELECT(*options, **dict(_name="idEtat", value=0, _id="boxEtats" ) )
                 select_libelle = SPAN('Changer l\'état à : ')
             
-            formAdmin = FORM(DIV('Commentaire : ',_class="center"), TEXTAREA(_name='commentaire',_class="text"), DIV(select_libelle, select, BR(),INPUT(_type='submit', _value="Enregistrer"),_class="center"))
+            divSelectEtat = DIV(select, styles={'CODE':'display: none;'})
+            if len(options) > 1:
+                divSelectEtat = DIV(select_libelle, select, BR())
+            
+            formAdmin = FORM(DIV('Commentaire : ',_class="center"), TEXTAREA(_name='commentaire',_class="text"), divSelectEtat, INPUT(_type='submit', _value="Enregistrer"),_class="center" )
     
     if  idDossier is not None:
             
@@ -175,8 +182,12 @@ def finalisationDemande():
     idDossier = request.vars.idDossier;
     
     if idDossier is not None:
-              
+
           rowDossier = projetService.getDossierById(idDossier)
+        
+          if rowDossier is None:
+                redirect(URL('default','index'))
+
           rowPorteur = porteurService.getPorteurById(rowDossier.porteur_id)
     
           isRepresentant = groupService.isRepresentantOfDossier(session, rowDossier.entite_id)

@@ -12,12 +12,16 @@ db.entite.name.requires=IS_NOT_EMPTY()
 db.entite.id.readable = False
 
 # TABLE BUDGET LIE A UNE ENTITE
-db.define_table('budget', Field('date_budget','date',requires = IS_DATETIME(format=('%d/%m/%Y'))), Field('budget_initial','double'), Field('entite_id','reference entite'))
+db.define_table('budget', Field('date_budget','date'), Field('budget_initial','double'), Field('entite_id','reference entite'),
+                 Field.Virtual('Date', lambda row: budgetService.formatDate(row.budget.date_budget) ))
+
+
+db.budget.budget_initial.represent = lambda name,row: str(name) +' €'
 
 db.budget.entite_id.label="Entité"
 db.budget.budget_initial.label='Budget initial'
 db.budget.date_budget.label='Date'
-
+db.budget.date_budget.readable=False
 
 # GESTION DE LA TABLE DES UTILISATEURS : MODIFICATION DES TABLES DES USERS DE WEB2PY
 auth = Auth(db)
@@ -56,7 +60,11 @@ db.auth_user.id.readable = False
 
 auth.settings.actions_disabled.append('register')
 
-auth.settings.login_next = URL('index')
+default_application = "CARI"
+default_controller = "listeProjets"
+default_function = "projets"
+
+auth.settings.login_next = URL('listeProjets','projet')
 auth.settings.profile_next = URL('profile')
 auth.settings.change_password_next = URL('profile')
 
@@ -97,6 +105,9 @@ db.dossier.mailGestionnaire.label='Email du gestionnaire'
 # TABLE PRODUIT : UN PRODUIT EST LIE A UN DOSSIER
 db.define_table('achat',
 Field('libelle'), Field('prix_unitaire','double',default=0.0), Field('date_achat','date'), Field('qte', 'integer',default=1), Field('dossier_id','reference dossier'), Field('budget_id','reference budget', readable=False, writable=False), Field('entite_id','reference entite'), Field.Virtual('Total', lambda row: row.achat.prix_unitaire*row.achat.qte))
+
+db.achat.qte.label='Quantité'
+db.achat.date_achat.label='Date d\'achat'
 
 db.achat.date_achat.represent = lambda name, row: name.strftime("%d/%m/%Y")
 db.achat.prix_unitaire.represent = lambda name,row: str(name) +' €'

@@ -2,8 +2,12 @@
 <div class="gestion">
     <div class="titreGestion">Gestion des budgets</div>
     
-    <ul class="addButton"><li>{{=A('Ajouter un budget',_href=URL('addBudget'),cid=request.cid, _class='linkAction inline')}}</li></ul>
-    <ul class="addButton"><li>{{=A('Exporter vers Excel', callback=URL('export2Budget'))}}</li></ul>
+    <div class="divOfBouton">
+        {{if addBudget==True:}}
+           {{=A('Ajouter un budget',_href=URL('addBudget'),cid=request.cid, _class='styleBouton')}}
+        {{pass}}
+        {{=A('Exporter vers Excel', callback=URL('export2Budget'), _class='styleBouton')}}
+    </div>
     
     <div class="web2py_grid ui-widget gridBudget">
 
@@ -20,16 +24,10 @@
                     {{=entiteService.getNameOfEntite(row.get('entite_id'))}}
                 </td>
                 <td>
-                    {{
-                        strDate = str(row.get('date_budget'))
-                        from datetime import datetime
-                        d = datetime.strptime(strDate, '%Y-%m-%d')
-                        day_string = d.strftime('%d/%m/%Y')
-                    }}
-                    {{=day_string}}
+                    {{=budgetService.formatDate(row.get('date_budget'))}}
                 </td>
                 <td>
-                    {{=row.get('budget_initial')}}
+                    {{=row.get('budget_initial')}} €
                 </td>
                 <td>
                     {{=A('Detail', _href=URL("budget","detailBudget",vars=dict(idBudget=row.get('id'))))}}

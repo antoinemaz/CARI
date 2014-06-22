@@ -1,4 +1,5 @@
 # coding: utf8
+@auth.requires_login()
 def gestionProduits():
     
     detailsProjetView = False

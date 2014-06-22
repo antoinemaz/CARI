@@ -4,13 +4,18 @@
      {{include 'frises.html'}}
 
      {{if gestionPJs == True:}}
-        <ul class="addButton"><li>{{=A('Ajouter une pièce jointe',_href=URL('addPJs',vars=dict(idDossier=request.vars.idDossier)),cid=request.cid, _class='linkAction inline')}}</li></ul>
+    <div class="divOfBouton">
+        {{=A('Ajouter une pièce jointe',_href=URL('addPJs',vars=dict(idDossier=request.vars.idDossier)),cid=request.cid, _class='styleBouton')}}
+    </div>
     {{pass}}
 
     {{=gridPJ}}
-   {{=A('Retour',_href=URL('achat','gestionProduits',vars=dict(idDossier=request.vars.idDossier)),cid=request.cid)}}
     
-   {{if initDossier == True:}}
-        {{=A('Suivant', _href=URL('projet','finalisationDemande',vars=dict(idDossier=request.vars.idDossier)),cid=request.cid)}}
-    {{pass}}
+   <div class="divOfBouton"> 
+       {{=A('Retour',_href=URL('achat','gestionProduits',vars=dict(idDossier=request.vars.idDossier)),cid=request.cid,_class='styleBouton')}}
+        
+       {{if initDossier == True:}}
+            {{=A('Suivant', _href=URL('projet','finalisationDemande',vars=dict(idDossier=request.vars.idDossier)),cid=request.cid,_class='styleBouton')}}
+        {{pass}}
+    </div>
 </div>

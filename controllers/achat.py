@@ -1,4 +1,5 @@
 # coding: utf8
+@auth.requires_login()
 def gestionProduits():
     
     detailsProjetView = False
@@ -36,7 +37,7 @@ def gestionProduits():
         
     prixTot = achatService.calculerPrixTotal(idDossier)
     
-    gridProduits = SQLFORM.grid(achatService.getAchatsByDossierId(idDossier), searchable=False, csv=False, ui="jquery-ui", links_in_grid=False, details=False, create=False, editable=gestionProduits, deletable=gestionProduits)
+    gridProduits = SQLFORM.grid(achatService.getAchatsByDossierId(idDossier), searchable=False, csv=False, ui="jquery-ui", links_in_grid=False, details=False, create=False, editable=gestionProduits, deletable=gestionProduits,user_signature=False)
     
     return locals()
 

@@ -1,7 +1,9 @@
 {{extend 'layout.html'}}
 <div class="gestion">
-    <div class="titreGestion">Ajout d'un budget</div>
-    <!-- LIEN DE RETOUR VERS LA PAGE DE GESTION DES COMPOSANTES -->
-    {{=A('Retour',_href=URL('gestionBudgets'),cid=request.cid, _class='linkAction bloc')}}
+    <div class="titreGestion">Ajout d'un budget</div>  
     {{=form}}
+        <!-- LIEN DE RETOUR VERS LA PAGE DE GESTION DES COMPOSANTES -->
+    <div class="divOfBouton">
+        {{=A('Retour',_href=URL('gestionBudgets'),cid=request.cid, _class='styleBouton')}}
+    </div>  
 </div>

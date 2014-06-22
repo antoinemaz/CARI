@@ -4,7 +4,7 @@ def gestionUsers():
     # ROLE ET COMPOSANTE DES UTILISATEURS MODIFIABLE : METHODE DEFINIT dans db.py
     userService.readonlyUser(True, True)
     # CREATION DU TABLEAU DES UTILISATEURS
-    gridUser = SQLFORM.grid(db.auth_user, searchable=False, csv=False, ui="jquery-ui", links_in_grid=False, create=False, editable=True, onupdate=updateUser )
+    gridUser = SQLFORM.grid(db.auth_user, searchable=False, csv=False, ui="jquery-ui", links_in_grid=False, create=False, editable=True, onupdate=updateUser,user_signature=False, details=False )
     return dict(gridUsers=gridUser)
 
 
@@ -15,7 +15,7 @@ def updateUser(form):
 @auth.requires_membership('President')
 def gestionEntites():
     # CREATION DU TABLEAU DES COMPOSANTES
-    gridEntites = SQLFORM.grid(db.entite, searchable=False, csv=False, ui="jquery-ui", links_in_grid=False, details=False, create=False)
+    gridEntites = SQLFORM.grid(db.entite, searchable=False, csv=False, ui="jquery-ui", links_in_grid=False, details=False, create=False, user_signature=False)
     return dict(gridEntites=gridEntites)
 
 # PAGE D'AJOUT D'UN UTILISATEUR
@@ -78,9 +78,11 @@ def addEntite():
 
     return locals()
 
+@auth.requires_login()
 def profile():
        userService.readonlyUser(True,False)
        return dict(form=auth.profile())
-    
+
+@auth.requires_login()
 def password():
        return dict(form=auth.change_password())

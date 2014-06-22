@@ -7,6 +7,14 @@ html{
     text-align:center;
 }
 
+.web2py_table{
+    text-align:center;
+}
+
+.ui-state-default{
+    color: #18447a;
+}
+
 .bleu{
    color: #18447A;
 }
@@ -57,6 +65,12 @@ a:hover{
     margin-left: 148px;
     font-weight:bold;
     text-shadow: 8px 6px 5px #B4B4B4;
+    border-radius: 8px;
+    box-shadow: 0 0 4px 1px #ef7f01;
+    color: #18447a;
+    padding: 20px;
+    position: absolute;
+    top: 42px;
 }
 
 #footer{

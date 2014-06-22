@@ -3,6 +3,7 @@ userService.readonlyUser(True,False)
 # PAGE D'ACCUEIL LORSQUE L'UTILISATEUR S'EST IDENTIFIE
 @auth.requires_login()
 def index():
+    redirect(URL('listeProjets','projets'))
     return dict()
 
 # PAGE DE CONNEXION DES UTILISATEURS

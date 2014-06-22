@@ -17,5 +17,7 @@
     </div>
     
     <!-- LIEN DE RETOUR VERS LA PAGE DE GESTION DES COMPOSANTES -->
-   {{=A('Retour',_href=URL('document', 'gestionPjs',vars=dict(idDossier=request.vars.idDossier)),cid=request.cid, _class='linkAction bloc')}}
+    <div class="divOfBouton">
+       {{=A('Retour',_href=URL('document', 'gestionPjs',vars=dict(idDossier=request.vars.idDossier)),cid=request.cid, _class='styleBouton')}}
+    </div>
 </div>

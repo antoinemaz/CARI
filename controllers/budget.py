@@ -1,12 +1,21 @@
 # coding: utf8
+@auth.requires_login()
 def gestionBudgets():
+    
+    isPresident = session.auth.user.group_id == Constantes.PRESIDENT
+    
+    addBudget = False
+    if(isPresident):
+       addBudget = True
+    
      # CREATION DU TABLEAU DE TOUS LES BUDGETS
-    gridAllBudget = SQLFORM.grid(db.budget, fields=(db.budget.entite_id, db.budget.date_budget, db.budget.budget_initial), searchable=False, csv=False, ui="jquery-ui", links_in_grid=True, create=False, editable=False, deletable=False, details=False, links=[lambda row: A('Detail',_href=URL("budget","detailBudget",vars=dict(idBudget=row.id)))] )
+    gridAllBudget = SQLFORM.grid(db.budget, fields=(db.budget.entite_id, db.budget.date_budget,db.budget.Date, db.budget.budget_initial), searchable=False, csv=False, user_signature=False, ui="jquery-ui", links_in_grid=True, create=False, editable=False, deletable=False, details=False, links=[lambda row: A('Detail',_href=URL("budget","detailBudget",vars=dict(idBudget=row.id)))] )
     
     newBudgets = db.executesql('SELECT * FROM budget b1 WHERE date_budget = (SELECT max(date_budget) FROM budget b2 WHERE b1.entite_id = b2.entite_id);', as_dict=True)
     
-    return dict(gridAllBudget=gridAllBudget,newBudgets=newBudgets)
+    return dict(gridAllBudget=gridAllBudget,newBudgets=newBudgets,addBudget=addBudget)
 
+@auth.requires_membership('President')
 def addBudget():
 
     # CREATION DU FORMULAIRE D'AJOUT D'UNE COMPOSANTE
@@ -27,6 +36,7 @@ def addBudget():
        response.flash = 'please fill out the form'
     return locals()
 
+@auth.requires_login()
 def detailBudget():
     idBudget = request.vars.idBudget;
     
@@ -38,6 +48,7 @@ def detailBudget():
     
     return locals()
 
+@auth.requires_membership('President')
 def export2Budget():
     exportBudget = db().select(db.budget.ALL)
     

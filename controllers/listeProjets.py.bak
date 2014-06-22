@@ -1,4 +1,5 @@
 # coding: utf8
+@auth.requires_login()
 def projets():
     
     db.dossier.etat_dossier_id.readable=True
@@ -8,6 +9,7 @@ def projets():
     
     return locals()
 
+@auth.requires_login()
 def rechercheDossier():
     
         recherche = False

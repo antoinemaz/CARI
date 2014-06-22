@@ -1,8 +1,8 @@
 {{extend 'layout.html'}}
     <div class="titreGestion">Gestion des utilisateurs</div>
     <!-- LIEN D'AJOUT D'UN UTILISATEUR -->
-<div class="divOfBouton">
-     {{=A('Ajouter un projet',_href=URL('compte','addUser'),cid=request.cid, _class='styleBouton addButton')}}
-</div>
+    <div class="divOfBouton">
+         {{=A('Ajouter un projet',_href=URL('compte','addUser'),cid=request.cid, _class='styleBouton addButton')}}
+    </div>
 
 {{=gridUsers}}

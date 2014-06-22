@@ -1,7 +1,7 @@
 {{extend 'layout.html'}}
 <div class="gestion">
     
-  {{include 'projet/frises.html'}}
+  {{include 'frises.html'}}
 
     <div class="center" id="dossierOk">
         {{ if changeState == False:}}

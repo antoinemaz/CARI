@@ -167,3 +167,7 @@
     
 {{=form.custom.end}}
 </div>
+
+<script>
+    document.getElementById('boxEtats').value=0;
+</script>

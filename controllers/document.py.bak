@@ -81,8 +81,6 @@ def addPJs():
     
     if request.vars.file_uid!=None and hasattr(request.vars.file_uid, 'filename'):
          form.vars.file_name = request.vars.file_uid.filename
-    else:
-        redirect(URL('gestionPjs',vars=dict(idDossier=request.vars.idDossier)))
     
     # SI LE FORMULAIRE EST SOUMIS
     if form.process().accepted:

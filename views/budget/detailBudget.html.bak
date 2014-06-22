@@ -2,26 +2,21 @@
 
 <div class="gestion">
     <div class="titreGestion">Détail budget</div>
-    
-         <div class="divOfBouton">
-            {{=A('Retour', _class='styleBouton' ,_href=URL('budget', 'gestionBudgets',vars=dict()),cid=request.cid)}}
-        </div>   
-    
 
         <div class="formStyle divInfoUser">
-        <div class="center divTitre">Informations du demandeur</div>
+        <div class="center divTitre">Informations du budget</div>
         <table>
             <tr>
-                <td class="bleu">>Nom de l'entite : </td>
+                <td class="bleu">Nom de l'entite : </td>
                 <td>{{=nameOfEntite}}</td>
             </tr>
             <tr>
-                <td class="bleu">>Budget : </td>
-                <td>{{=rowBudget.budget_initial}}</td>
+                <td class="bleu">Budget : </td>
+                <td>{{=rowBudget.budget_initial}} €</td>
             </tr>
             <tr>
-                <td class="bleu">>Date : </td>
-                <td>{{=rowBudget.date_budget}}</td>
+                <td class="bleu">Date : </td>
+                <td>{{=budgetService.formatDate(rowBudget.date_budget)}}</td>
             </tr>
     
             </table>
@@ -40,16 +35,16 @@
                     {{=row.libelle}}
                 </td>
                <td>
-                    {{=row.date_achat}}
+                    {{=budgetService.formatDate(row.date_achat)}}
                 </td>
                 <td>
-                    {{=row.prix_unitaire}}
+                    {{=row.prix_unitaire}} €
                 </td>
                 <td>
                     {{=row.qte}}
                 </td>
                 <td>
-                    {{=row.Total}}
+                    {{=row.Total}} €
                 </td>
             </tr>
         {{pass}}

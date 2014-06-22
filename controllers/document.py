@@ -37,7 +37,7 @@ def gestionPjs():
     
     userService.readonlyUser(True,False)
     
-    gridPJ = SQLFORM.grid(documentService.getDocumentsByDossierId(idDossier), searchable=False, csv=False, ui="jquery-ui", details=False, create=False,editable=False, deletable=gestionPJs)
+    gridPJ = SQLFORM.grid(documentService.getDocumentsByDossierId(idDossier), searchable=False, csv=False, ui="jquery-ui", details=False, create=False,editable=False, deletable=gestionPJs, user_signature=False)
 
     return locals()
 

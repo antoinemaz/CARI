@@ -1,3 +1,5 @@
 {{extend 'layout.html'}}
-<h1>Ceci est le modèle compte/gestionEntites.html </h1>
-{{=BEAUTIFY(response._vars)}}
+    <div class="titreGestion">Gestion des entités</div>
+    <!-- LIEN D'AJOUT D'UNE COMPOSANTE -->
+    <ul class="addButton"><li>{{=A('Ajouter une entité',_href=URL('addEntite'),cid=request.cid, _class='linkAction inline')}}</li></ul>
+{{=gridEntites}}

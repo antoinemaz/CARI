@@ -18,7 +18,15 @@
                 <td class="bleu">Date : </td>
                 <td>{{=budgetService.formatDate(rowBudget.date_budget)}}</td>
             </tr>
-    
+             <tr>
+                <td class="bleu">Budget Restant : </td>
+                <td>{{=(rowBudget.budget_initial) - total}} €</td>
+            </tr>
+            <tr>
+                <td class="bleu">Consommation : </td>                
+                <td>{{=budgetService.getPercentValue((total/rowBudget.budget_initial)*100, 2)}} %</td>
+            </tr>
+            
             </table>
             
 </div>    

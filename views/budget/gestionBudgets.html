@@ -6,7 +6,9 @@
         {{if addBudget==True:}}
            {{=A('Ajouter un budget',_href=URL('addBudget'),cid=request.cid, _class='styleBouton')}}
         {{pass}}
-        {{=A('Exporter vers Excel', callback=URL('export2Budget'), _class='styleBouton')}}
+        <div>
+            {{=formCsv}}
+        </div>
     </div>
     
     <div class="web2py_grid ui-widget gridBudget">

@@ -7,6 +7,6 @@ class documentService(object):
         db.piece_jointe.file_name.writable = write
      
     @staticmethod
-    def getDocumentsByDossierId(idDossier);
+    def getDocumentsByDossierId(idDossier):
         query = db.piece_jointe.id_dossier==idDossier
         return query

@@ -26,7 +26,7 @@ class projetService(object):
         if etat_id is not None and etat_id != 0 and etat_id != '0':
               projetService.updateEtat(etat_id,idDossier)
 
-              if etat_id == '4':
+              if etat_id == str(Constantes.ACCEPTE):
                   achatService.updateBudgetOfProduitsDuDossier(rowDos)
 
     @staticmethod
@@ -51,6 +51,8 @@ class projetService(object):
             query2 = None
             if(isRepresentant):
                 query2 = db.dossier.entite_id == user.entite_id
+            else:
+                query1 = db.dossier.user_id==session.auth.user.id
                 
             queryFinal = query1 | query2
 

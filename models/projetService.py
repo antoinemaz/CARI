@@ -51,6 +51,8 @@ class projetService(object):
             query2 = None
             if(isRepresentant):
                 query2 = db.dossier.entite_id == user.entite_id
+            else:
+                query2 = db.dossier.user_id==session.auth.user.id
                 
             queryFinal = query1 | query2
 

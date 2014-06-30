@@ -6,6 +6,7 @@ db = DAL('mysql://root@localhost/cari')
 # TABLE COMPOSANTE
 db.define_table('entite', Field('name'), format='%(name)s')
 
+db.entite.name.label="Nom"
 db.entite.name.requires=IS_NOT_EMPTY()
 
 # ID DES ENTITES INVISIBLES DANS LES FORMULAIRES
@@ -99,8 +100,10 @@ db.dossier.beneficiaires.requires=IS_NOT_EMPTY()
 db.dossier.mailResponsable.requires=IS_EMAIL()
 db.dossier.mailGestionnaire.requires=IS_EMPTY_OR(IS_EMAIL())
 
+db.dossier.etat_dossier_id.label="Etat"
 db.dossier.mailResponsable.label='Email du responsable'
 db.dossier.mailGestionnaire.label='Email du gestionnaire'
+db.dossier.date_dossier.label='Date de création du dossier'
 
 # TABLE PRODUIT : UN PRODUIT EST LIE A UN DOSSIER
 db.define_table('achat',
@@ -156,7 +159,7 @@ def scriptInsert():
     # INSERTION DU PREMIER UTILISATEUR
     db.auth_user.insert(
             password = db.auth_user.password.validate('admin')[0],
-            email = 'null@null.com',
+            email = 'admin@admin.com',
             first_name = 'System',
             last_name = 'Administrator',
             group_id=1
@@ -167,7 +170,6 @@ def scriptInsert():
 
     # LISTE DES ENTITES
     db.entite.insert(name="UFR LAM");
-    db.entite.insert(name="services communs");
 
     # INSERTION DES ETATS
     db.etat_dossier.insert(nom="Brouillon")
@@ -177,4 +179,4 @@ def scriptInsert():
     db.etat_dossier.insert(nom="Refusé")
     
     #UN BUDGET POUR TESTER
-    #db.budget.insert(entite_id=1, annee_budget='2014', budget_initial="10000")
+    db.budget.insert(entite_id=1, date_budget='2014-06-30', budget_initial="10000")

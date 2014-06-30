@@ -190,6 +190,7 @@
 'Roles': 'Roles',
 'Rows in Table': 'Rows in Table',
 'Rows selected': 'Rows selected',
+'Réinitialiser le mot de passe': 'Réinitialiser le mot de passe',
 'Sauvegarder': 'Sauvegarder',
 'Save model as...': 'Save model as...',
 'Se connecter': 'Se connecter',

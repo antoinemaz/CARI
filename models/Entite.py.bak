@@ -1,0 +1,16 @@
+class Entite:
+    
+     def __init__(self,Libelle):
+        
+       self.libelle = Libelle
+        
+        
+     def addUser ():
+
+        
+      return ""
+    
+     def ajoutBudget ():
+
+        
+      return ""

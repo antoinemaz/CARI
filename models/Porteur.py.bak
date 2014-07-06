@@ -1,19 +1,21 @@
-# coding: utf8
-class porteurService(object):
+class Porteur:
+    
+    
+    def __init__(self,Nom,Prenom,Email, Entite):
+        
+        self.nom = Nom
+        self.prenom = Prenom
+        self.email = Email
+        self.entite = Entite
 
-    # get porteur par son id
-    @staticmethod
+        
     def getPorteurById(unid):
          rows = db.porteur[unid]
          return rows
 
-    # insertion d'un porteur dans la table porteur    
-    @staticmethod
     def insertPorteur(vars):
         return db.porteur.insert(**db.porteur._filter_fields(vars))
     
-    # mis a jour des informations du porteur par son id
-    @staticmethod
     def updatePorteur(vars, idPorteur):
          rowPor = porteurService.getPorteurById(idPorteur)
          rowPor.update_record(**db.porteur._filter_fields(vars))

@@ -1,5 +1,5 @@
 # coding: utf8
-class achatService(object):
+class entiteService(object):
     
     @staticmethod
     def getNameOfEntite(unid):

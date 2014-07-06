@@ -1,0 +1,9 @@
+class Representant(Utilisateur):
+
+    def getRepresentantsOfEntite(idEntite):
+        
+        query1 = db.auth_user.group_id==Constantes.REPRESENTANT
+        query2 = db.auth_user.entite_id==idEntite
+        
+        rows = db(query1 & query2).select()
+        return rows

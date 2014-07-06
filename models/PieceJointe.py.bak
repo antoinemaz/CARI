@@ -1,0 +1,12 @@
+class PieceJointe:
+    
+    
+    def __init__(self,FileUid,FileName):
+        
+        self.fileUid = FileUid
+        self.fileName = FileName
+        
+
+    def getDocumentsByDossierId(idDossier):
+        query = db.piece_jointe.id_dossier==idDossier
+        return query

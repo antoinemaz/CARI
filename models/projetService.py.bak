@@ -1,58 +1,72 @@
 # coding: utf8
 class projetService(object):
 
+    # get dossier par son id
     @staticmethod
     def getDossierById(unid):
         rows = db.dossier[unid]
         return rows
 
+    # insertion d'un dossier en base
     @staticmethod
     def insertDossier(vars):
         return db.dossier.insert(**db.dossier._filter_fields(vars))
     
+    # mise a jour des informations d'un dossier par son id
     @staticmethod
     def updateDossier(vars, idDossier):
         rowDos = projetService.getDossierById(idDossier)
         rowDos.update_record(**db.dossier._filter_fields(vars))
         return rowDos.porteur_id
     
+    # mis a jour du commentaire et de l'état d'un dossier
     @staticmethod
     def updateStatusDossier(comment, etat_id, idDossier):
         
+        # on met a jour le commentaire
         if idDossier is not None:
             rowDos = projetService.getDossierById(idDossier)
             rowDos.update_record(commentaire= comment)
 
+        # s'il y a un état lors de l'udpate du dossier, on va mettre a jour l'état du dossier
         if etat_id is not None and etat_id != 0 and etat_id != '0':
               projetService.updateEtat(etat_id,idDossier)
 
+              # et en plus, si l'état est accepté, on met a jour le budget_id de chaque produits du dossier (null par défaut)
               if etat_id == str(Constantes.ACCEPTE):
                   achatService.updateBudgetOfProduitsDuDossier(rowDos)
 
+    # mis a jour de l'état d'un dossier
     @staticmethod
     def updateEtat(etat_id, idDossier):
          if idDossier is not None:
               rowDos = projetService.getDossierById(idDossier)
               rowDos.update_record(etat_dossier_id=etat_id)
 
+    # get la query qu'il faut transmettre au tableau 
     @staticmethod
     def getQueryOfDossier(session):
        
+          # le user connecté est il un président, représentant ou user (demandeur)
           isPresident = session.auth.user.group_id == Constantes.PRESIDENT
           isRepresentant = session.auth.user.group_id == Constantes.REPRESENTANT
         
+          # get infos du user
           user = userService.getInfosUser(session.auth.user.id)
         
+          # si c'est un président, on affiche tous les dossier dans le tableau
           if(isPresident):
             queryFinal = db.dossier
           else:
+            # sinon, affichage tous les dossiers en tant que demandeur
             query1 = db.dossier.user_id==session.auth.user.id
             
             query2 = None
+            # si c'est un représentant, on affiche tous les dossiers de son entité
             if(isRepresentant):
                 query2 = db.dossier.entite_id == user.entite_id
             else:
-                query1 = db.dossier.user_id==session.auth.user.id
+                query2 = db.dossier.user_id==session.auth.user.id
                 
             queryFinal = query1 | query2
 

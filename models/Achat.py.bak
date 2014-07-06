@@ -1,7 +1,16 @@
-# coding: utf8
-class achatService(object):
+class Achat:
     
-    @staticmethod
+    
+    def __init__(self,Code,Nom,description,prixuni,quantite, Budget):
+        
+        self.code = Code
+        self.nom = Nom
+        self.desc = description
+        self.pxunitaire = prixuni
+        self.qte = quantite
+        self.budget = Budget
+        
+    
     def updateBudgetOfProduitsDuDossier(dossier):
     
         rowBudgets = db(db.budget.entite_id == dossier.entite_id).select()
@@ -18,12 +27,10 @@ class achatService(object):
            for row in rowAchats:
                 row.update_record(budget_id=rowBudget.id)
     
-    @staticmethod
     def getAchatsByDossierId(idDossier):
         query = db.achat.dossier_id==idDossier
         return query
         
-    @staticmethod
     def calculerPrixTotal(idDossier):             
         query = achatService.getAchatsByDossierId(idDossier)
     

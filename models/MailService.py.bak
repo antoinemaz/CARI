@@ -1,6 +1,7 @@
 # coding: utf8
 class mailService(object):
     
+    # configuration d'envoi de mails
     @staticmethod
     def settingMail():
         from gluon.tools import Mail
@@ -12,6 +13,7 @@ class mailService(object):
         mail.settings.login = 'antoine.mazelin@gmail.com:monamour91'
         return mail
     
+    # méthode qui permet d'envoyer des mails à chaque changement d'état de dossier et à chaque modification de commentaire 
     @staticmethod
     def sendMail(idDossier, etatAvantUpdate,request):
         
@@ -87,10 +89,8 @@ class mailService(object):
         mailSender = mailService.settingMail()
          # Envoi des mails
         mailSender.send(to=[demandeur.email], cc=[str(porteur.mail)], subject=sujet,message=msgDemandeur)
-        mailSender = mailService.settingMail()
         mailSender.send(to=[str(dossier.mailResponsable)], cc=[str(dossier.mailGestionnaire)], subject=sujet,message=msgResponsable)
         for pres in userService.getPresidents():
-              mailSender = mailService.settingMail()
               mailSender.send(to=[pres.email], subject=sujet,message=msgPresident)
                 
                 

@@ -1,16 +1,19 @@
 # coding: utf8
 class budgetService(object):
     
+    # récupération du budget par son id
     @staticmethod
     def getBudgetById(unid):
         rows = db.budget[unid]
         return rows
     
+    # récupération de tous les produits d'un budget
     @staticmethod
     def getProduitsByBudgetId(unid):
         query = db(db.achat.budget_id==unid).select()
         return query
-    
+
+    # méthode permettant de formater la date au format dd/MM/YYYY
     @staticmethod
     def formatDate(date):
           strDate = str(date)
@@ -19,6 +22,7 @@ class budgetService(object):
           day_string = d.strftime('%d/%m/%Y')
           return day_string
 
+    # récupération du total du budget
     @staticmethod
     def getTotalProduitsByBudgetId(unid):
         query = db(db.achat.budget_id==unid).select()
@@ -28,10 +32,12 @@ class budgetService(object):
             prixTot = prixTot+row.Total
         return prixTot
 
+    # récupératon de la valeurs en pourcentages avec le nombre de décimal à renseigner
     @staticmethod
     def getPercentValue(value, chiffres):
          return round(value, chiffres)
 
+    # récupération du dernier budget en date de chaque entité
     @staticmethod
     def getLastBudgets():
         newBudgets = db.executesql('SELECT * FROM budget b1 WHERE date_budget = (SELECT max(date_budget) FROM budget b2 WHERE b1.entite_id = b2.entite_id);', as_dict=True)

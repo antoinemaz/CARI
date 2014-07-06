@@ -1,0 +1,5 @@
+class Gestionnaire(Utilisateur):
+
+    def getPresidents():
+        rows = db(db.auth_user.group_id==Constantes.PRESIDENT).select()
+        return rows

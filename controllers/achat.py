@@ -1,5 +1,7 @@
 # coding: utf8
 @auth.requires_login()
+
+# page de gestion des achats d'un demande
 def gestionProduits():
     
     detailsProjetView = False
@@ -7,40 +9,49 @@ def gestionProduits():
     gestionPJsView = False
     finalDemandeView = False
     
+    # id du dossier récuperé en paramètre depuis le requete http
     idDossier = request.vars.idDossier;
     
     if idDossier is not None:
         
           gestionProduits = True
         
+          #récupération du dossier à partir de son id
           rowDossier = projetService.getDossierById(idDossier)
 
+           # redirection vers la page des projets si le dossier n'est pas trouvé à partir de son id
           if rowDossier is None:
-               redirect(URL('default','index'))   
-            
-          rowPorteur = porteurService.getPorteurById(rowDossier.porteur_id)
+               redirect(URL('listeProjets','projets'))   
     
+          # on va tester si le user connecté est un président, représentant ou demandeur
           isRepresentant = groupService.isRepresentantOfDossier(session, rowDossier.entite_id)
           isPresident = session.auth.user.group_id == Constantes.PRESIDENT
           isDemandeur = rowDossier.user_id == session.auth.user.id
         
+          # user non connecté, redirection
           if isDemandeur == False and  isRepresentant == False and isPresident == False:
-              redirect(URL('default','index'))
-                
+              redirect(URL('listeProjets','projets'))
+           
+          # gestionProduits : variable qui permet de définir la possibilité de modifier les achats pour (ajout, suppression, modification)
+          # le demandeur ne pourra pas si le dossier est à l'état brouillon
           if isDemandeur and (not isPresident and not isRepresentant) and rowDossier.etat_dossier_id != Constantes.BROUILLON:
                   gestionProduits = False
-            
+           
+           # initDossier : gère l'affichage en fonction de l'état du dossier (variable utilisée dans la vue)
           if rowDossier.etat_dossier_id is None or rowDossier.etat_dossier_id == Constantes.BROUILLON:
                 initDossier = True
           else:
                 initDossier = False
-        
+    
+    # calcule le prix total du dossier
     prixTot = achatService.calculerPrixTotal(idDossier)
     
+    # création du tableau représentant la liste des achats du dossier
     gridProduits = SQLFORM.grid(achatService.getAchatsByDossierId(idDossier), searchable=False, csv=False, ui="jquery-ui", links_in_grid=False, details=False, create=False, editable=gestionProduits, deletable=gestionProduits,user_signature=False)
     
     return locals()
 
+# page d'ajout d'un produit
 @auth.requires_login()
 def addProduits():
 
@@ -49,49 +60,49 @@ def addProduits():
     gestionPJsView = False
     finalDemandeView = False
     
+    # id du dossier récuperé en paramètre depuis le requete http
     idDossier = request.vars.idDossier;
     
     if idDossier is not None:
-              
+          
+          #récupération du dossier à partir de son id
           rowDossier = projetService.getDossierById(idDossier)
     
           if rowDossier is None:
-                redirect(URL('default','index'))
-
-          rowPorteur = porteurService.getPorteurById(rowDossier.porteur_id)
-                    
+                redirect(URL('listeProjets','projets'))
+          
+          # on va tester si le user connecté est un président, représentant ou demandeur
           isRepresentant = groupService.isRepresentantOfDossier(session, rowDossier.entite_id)
           isPresident = session.auth.user.group_id == Constantes.PRESIDENT
           isDemandeur = rowDossier.user_id == session.auth.user.id
         
+          # user non connecté, redirection
           if isDemandeur == False and  isRepresentant == False and isPresident == False:
-              redirect(URL('default','index'))
-                
+              redirect(URL('listeProjets','projets'))
+          
+          # le demandeur ne peut plus ajouter de produits si la demande n'est plus a l'état brouillon (elle est minimum à soumis)
           if isDemandeur and (not isPresident and not isRepresentant) and rowDossier.etat_dossier_id != Constantes.BROUILLON:
-              redirect(URL('default','index'))
+              redirect(URL('listeProjets','projets'))
     
-     # CREATION DU FORMULAIRE D'AJOUT D'UNE COMPOSANTE
+     # création du formulaire d'ajout d'un produit
     form = SQLFORM(db.achat)
     
-    # ON SPECIFIE L'ID DU DOSSIER AU PROJET
     form.vars.dossier_id = request.vars.idDossier
        
     # SI LE FORMULAIRE EST SOUMIS
     if form.process().accepted:
      
+        # si on ajoute un produit d'un dossier accepté, on met a jour le budget de l'entité par rapport à l'entité choisie pour le produit
         if rowDossier.etat_dossier_id == Constantes.ACCEPTE:
             achatService.updateBudgetOfProduitsDuDossier(rowDossier.id)
         
-        # INSERTION EN BASE
         response.flash = 'form accepted'
-        # PUIS ON REDIRIGE VERS LA PAGE DE GESTION DES COMPOSANTES
+        
+        # PUIS ON REDIRIGE VERS LA PAGE DE GESTION DES PRODUITS
         redirect(URL('gestionProduits',vars=dict(idDossier=request.vars.idDossier)))
-     # SI LE FORMULAIRE CONTIENT DES ERREURS
     elif form.errors:
-        # ON VA LES AFFICHER
        response.flash = 'form has errors'
     else:
-        # FORMULAIRE VIDE
        response.flash = 'please fill out the form'
 
     return locals()

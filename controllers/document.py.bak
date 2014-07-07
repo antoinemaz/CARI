@@ -1,4 +1,6 @@
 # coding: utf8
+
+# page de gestion des pieces jointes d'un dossier
 @auth.requires_login()
 def gestionPjs():
     
@@ -7,41 +9,49 @@ def gestionPjs():
     gestionPJsView = True
     finalDemandeView = False
     
+    # id du dossier récuperé en paramètre depuis le requete http
     idDossier = request.vars.idDossier;
     
     if idDossier is not None:
         
           gestionPJs = True
         
+          #récupération du dossier à partir de son id
           rowDossier = projetService.getDossierById(idDossier)
 
+          # pas de paramètre, on redirige vers la page des projets
           if rowDossier is None:
-                redirect(URL('default','index'))
-            
-          rowPorteur = porteurService.getPorteurById(rowDossier.porteur_id)
+                redirect(URL('listeProjets','projets'))
     
+          # on va tester si le user connecté est un président, représentant ou demandeur
           isRepresentant = groupService.isRepresentantOfDossier(session, rowDossier.entite_id)
           isPresident = session.auth.user.group_id == Constantes.PRESIDENT
           isDemandeur = rowDossier.user_id == session.auth.user.id
         
+          # non connecté, redirection vers la page liste des projets
           if isDemandeur == False and  isRepresentant == False and isPresident == False:
-              redirect(URL('default','index'))
-                
+              redirect(URL('listeProjets','projets'))
+           
+          # gestionPJs : variable qui permet de savoir si le user peut gérer les pieces jointes (suppression et ajout)
+          # le demandeur ne pourra pas si le dossier est à l'état brouillon
           if isDemandeur and (not isPresident and not isRepresentant) and rowDossier.etat_dossier_id != Constantes.BROUILLON:
                   gestionPJs = False
-            
+           
+          # initDossier : gère l'affichage en fonction de l'état du dossier (variable utilisée dans la vue)
           if rowDossier.etat_dossier_id is None or rowDossier.etat_dossier_id == Constantes.BROUILLON:
                 initDossier = True
           else:
                 initDossier = False
     
-    userService.readonlyUser(True,False)
     
-    gridPJ = SQLFORM.grid(documentService.getDocumentsByDossierId(idDossier), searchable=False, csv=False, ui="jquery-ui", details=False, create=False,editable=False, deletable=gestionPJs)
+    #userService.readonlyUser(True,False)
+    
+    # création du tableau de pices jointes
+    gridPJ = SQLFORM.grid(documentService.getDocumentsByDossierId(idDossier), searchable=False, csv=False, ui="jquery-ui", details=False, create=False,editable=False, deletable=gestionPJs, user_signature=False)
 
     return locals()
 
-
+# page d'ajout d'une piece jointe
 @auth.requires_login()
 def addPJs():
     
@@ -50,27 +60,32 @@ def addPJs():
     gestionPJsView = True
     finalDemandeView = False
     
+    # id du dossier récuperé en paramètre depuis le requete http
     idDossier = request.vars.idDossier;
     
     if idDossier is not None:
-              
+          
+          #récupération du dossier à partir de son id
           rowDossier = projetService.getDossierById(idDossier)
             
+          # pas de paramètre, on redirige vers la page des projets
           if rowDossier is None:
-               redirect(URL('default','index'))
-            
-          rowPorteur = porteurService.getPorteurById(rowDossier.porteur_id)
-    
+               redirect(URL('listeProjets','projets'))
+           
+          # on va tester si le user connecté est un président, représentant ou demandeur
           isRepresentant = groupService.isRepresentantOfDossier(session, rowDossier.entite_id)
           isPresident = session.auth.user.group_id == Constantes.PRESIDENT
           isDemandeur = rowDossier.user_id == session.auth.user.id
         
+         # non connecté, redirection vers la page liste des projets
           if isDemandeur == False and  isRepresentant == False and isPresident == False:
-              redirect(URL('default','index'))
-                
+              redirect(URL('listeProjets','projets'))
+           
+          # demandeur + dossier a l'état autre que brouillon = au minimum soumis, donc on peut plus ajouter de produits en tant que demandeur
           if isDemandeur and (not isPresident and not isRepresentant) and rowDossier.etat_dossier_id != Constantes.BROUILLON:
-              redirect(URL('default','index'))
+              redirect(URL('listeProjets','projets'))
     
+    # nom du fichier impossible a modifier car il correspond au nom du fichier
     documentService.displayFileName(False,False)
     
      # CREATION DU FORMULAIRE D'AJOUT D'UNE COMPOSANTE

@@ -1,6 +1,9 @@
 /* GENERAL */
 html{
     overflow:auto;
+    display: table;
+    height: 100%;
+    margin: 0 auto;
 }
 
 .center {
@@ -13,6 +16,7 @@ html{
 
 .ui-state-default{
     color: #18447a;
+    text-align:center;
 }
 
 .bleu{
@@ -20,7 +24,10 @@ html{
 }
 
 body{
-    background-color:#333333
+    display: table-cell;
+    vertical-align: middle;
+    width: 1400px;
+    background-color: #ebecec;
 }
 
 a{
@@ -51,6 +58,10 @@ a:hover{
     margin-top:0px;
     margin-bottom:10px;
     background-color: #FFFFFF;
+    border-color: #ef7f01;
+    border-radius: 7px;
+    border: 1px solid #c7c7c7;
+    box-shadow: 3px 3px 3px 3px #a9a9a9;
 }
 
 #header{
@@ -62,18 +73,17 @@ a:hover{
     display: inline-block;
     font-size: 200%;
     line-height: 1.2;
-    margin-left: 148px;
+    margin-left: 247px;
     font-weight:bold;
     text-shadow: 8px 6px 5px #B4B4B4;
     border-radius: 8px;
     box-shadow: 0 0 4px 1px #ef7f01;
-    color: #18447a;
     padding: 20px;
-    position: absolute;
-    top: 42px;
+    margin-bottom: 32px;
 }
 
 #footer{
+    border-radius: 7px;
     background-color: #FFFFFF;
     height: 50px;
     text-align:center;
@@ -353,4 +363,9 @@ a:hover{
     width: 350px;
     margin: 0 auto;
     margin-top: 26px;
+}
+
+/* ENTITES */
+.tabEntites .web2py_grid table{
+    width:500px;
 }

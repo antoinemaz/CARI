@@ -1,4 +1,9 @@
+<!-- type d'application de la response : excel
+nom du fichier : variable filename construie dans le controlleur
+et on ecrit un flux binaire (stream) dans la reponse -->
+
 {{
+
     response.headers['Content-Type']='application/vnd.ms-excel'
     response.headers['Content-disposition']='attachment; filename=' + filename
     response.write(stream.getvalue(), escape=False)

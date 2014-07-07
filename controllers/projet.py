@@ -1,4 +1,6 @@
 # coding: utf8
+
+# page d'ajout d'un dossier
 @auth.requires_login()
 def addProjet():
     
@@ -7,7 +9,10 @@ def addProjet():
     gestionPJsView = False
     finalDemandeView = False
     
+    # id du dossier récuperé en paramètre depuis le requete http
     idDossier = request.vars.idDossier;
+    
+    # mode étition du dossier activé (juste pour le représentant ou président)
     editMode = request.vars.editMode;
     
     read = False
@@ -17,49 +22,66 @@ def addProjet():
     isRepresentant = False
     isDemandeur = False
     rowDossier = None
-    
     user = None
     nameOfEntityUser = None
     nameOfGroupUser = None
     
     if idDossier is not None:
           
+           #récupération du dossier à partir de son id
           rowDossier = projetService.getDossierById(idDossier)
            
+           # pas de parametre, on redirige vers la page listant les projets
           if rowDossier is None:
-                redirect(URL('default','index'))
-            
+                redirect(URL('listeProjets','projets'))
+           
+          # récupération du porteur à partir de l'id du dossier
           rowPorteur = porteurService.getPorteurById(rowDossier.porteur_id)
 
+          # récupération des informations du user connecté
           user = userService.getInfosUser(rowDossier.user_id)
+          #récupération du nom de l'entité par son id du user connecté
           nameOfEntityUser = entiteService.getNameOfEntite(user.entite_id)
+          # récupération du nom du role du user connecté
           nameOfGroupUser = groupService.getNameOfGroup(user.group_id)
-            
+          
+          # on va tester si le user connecté est un président, représentant ou demandeur
           isRepresentant = groupService.isRepresentantOfDossier(session, rowDossier.entite_id)
           isPresident = session.auth.user.group_id == Constantes.PRESIDENT
           isDemandeur = rowDossier.user_id == session.auth.user.id
         
+          # user non connecté, redirection
           if isDemandeur == False and  isRepresentant == False and isPresident == False:
-            redirect(URL('default','index'))
+            redirect(URL('listeProjets','projets'))
         
+          # si editMode n'est pas a true (passé en paramètre), et que le dossier est brouillon, le representant/president
+          # aura le formulaire de la demande qu'en mode lecture seule
           if (rowDossier.etat_dossier_id != Constantes.BROUILLON and editMode == None):
             read = True
     
+    # création du formulaire d'ajout d'un dossier
     form=SQLFORM.factory(db.porteur, db.dossier,_class='formStyle',_name='formNormal',readonly=read)
     
     if idDossier is not None:
+        
+            #création de la liste déroulante contenant les états a changer pour le dossier
+            # visible que par le representant/president
             options = {};
+            
+            # dossier soumis > etats possible : accepté, refusé, ou en attente
             if(rowDossier.etat_dossier_id == Constantes.SOUMIS):
                     options = {OPTION('', _value=0),
                                OPTION(Constantes.ACCEPTE_TXT, _value=Constantes.ACCEPTE),
                                OPTION(Constantes.REFUSE_TXT, _value=Constantes.REFUSE),
                                OPTION(Constantes.ATTENTE_TXT, _value=Constantes.ATTENTE)}
-                    
+             
+            # dossier en attente : accepté ou refusé
             if(rowDossier.etat_dossier_id == Constantes.ATTENTE):
                     options = {OPTION('', _value=0),
                                OPTION(Constantes.ACCEPTE_TXT, _value=Constantes.ACCEPTE),
                                OPTION(Constantes.REFUSE_TXT, _value=Constantes.REFUSE)}
             
+            # dossier accepté ou refusé : plus d'options (d'état) possible
             if(rowDossier.etat_dossier_id == Constantes.ACCEPTE or rowDossier.etat_dossier_id == Constantes.REFUSE):
                 options = {OPTION('', _value=0)}
             
@@ -67,17 +89,20 @@ def addProjet():
                 select = ''
                 select_libelle = ''
             else:
+                # création de la liste deroulante
                 select = SELECT(*options, **dict(_name="idEtat", value=0, _id="boxEtats" ) )
                 select_libelle = SPAN('Changer l\'état à : ')
             
-            divSelectEtat = DIV(select, styles={'CODE':'display: none;'})
-            if len(options) > 1:
                 divSelectEtat = DIV(select_libelle, select, BR())
             
+            # création du formulaire d'administration visible que par le representant/president
             formAdmin = FORM(DIV('Commentaire : ',_class="center"), TEXTAREA(_name='commentaire',_class="text"), divSelectEtat, INPUT(_type='submit', _value="Enregistrer"),_class="center" )
     
+    # le dossier existe déjà et on récupère l'id
     if  idDossier is not None:
-            
+         
+        # peuplement des valeurs du formulaire au cas ou on reviendrait sur le dossier déjà créé,
+        # possibilité de mettre a jour le formulaire
         form.vars.intitule = rowDossier.intitule
         form.vars.urgent = rowDossier.urgent
         form.vars.caractere_urgent = rowDossier.caractere_urgent
@@ -98,79 +123,96 @@ def addProjet():
         form.vars.etat_dossier_id = rowDossier.etat_dossier_id
         formAdmin.vars.idEtat = rowDossier.etat_dossier_id
         
+        # initDossier : gère l'affichage en fonction de l'état du dossier (variable utilisée dans la vue)
         if form.vars.etat_dossier_id is None or form.vars.etat_dossier_id == Constantes.BROUILLON:
             initDemande = True
         else:
             initDemande = False
         
+        # get nom de l'entité par l'entite_id du dossier
         nomEntite= entiteService.getNameOfEntite(form.vars.entite_id)
+    
+    # pas d'id récupéré dans la requete http, on set automatiquement l'état du dossier a brouillon
     else:
         form.vars.etat_dossier_id = Constantes.BROUILLON
 
-        # SI LE FORMULAIRE EST SOUMIS
+    # si le formulaire de création d'un dossier est soumis
     if form.process(formname='formNormal').accepted:
         
+       # le user_id (demandeur) du dossier est setter par l'id du user connecté 
        form.vars.user_id = session.auth.user.id
-        
+       
+       # id du dossier null, donc c'est un nouveau dossier
        if idDossier is None:
-           idPorteur = porteurService.insertPorteur(form.vars)
-           form.vars.date_dossier = request.now
-           form.vars.porteur_id=idPorteur
-           idDoss = projetService.insertDossier(form.vars)
             
+           # insertion des informations du porteur dans la table porteur en base
+           idPorteur = porteurService.insertPorteur(form.vars)
+           #date du dossier a la date du jour
+           form.vars.date_dossier = request.now
+           # on set l'id du porteur au dossier du formulaire
+           form.vars.porteur_id=idPorteur
+           #puis insertion du dossier en base puis récupération de l'id créé
+           idDoss = projetService.insertDossier(form.vars)
+       
+       # idDossier pas vide : le dossier existe déjà
        else:
            
+           # mise a jour du commentaire du dossier (rempli seulement par le representant/president)
            form.vars.commentaire = formAdmin.vars.commentaire
 
+           # mis a jour des infos du dossier et récupération de l'id du porteur
            idPort = projetService.updateDossier(form.vars, idDossier)
+           # mis a jour des infos du porteur également
            porteurService.updatePorteur(form.vars, idPort)
                 
            idDoss = idDossier
 
-        # INSERTION EN BASE
        response.flash = 'form accepted'
         
+        #redirection apres submit 
+        # idDossier vide : le dossier est nouveau, on rediriger vers la page de gestion des produits
        if idDossier is None:
            redirect(URL('achat', 'gestionProduits',vars=dict(idDossier=idDoss)))
+       # on met a jour les infos d'un dossier existants : on reste sur la page
        else:
            redirect(URL('addProjet',vars=dict(idDossier=idDoss)))
         
-        
-     # SI LE FORMULAIRE CONTIENT DES ERREURS
     elif form.errors:
-        # ON VA LES AFFICHER
        response.flash = 'form has errors'
     else:
-        # FORMULAIRE VIDE
        response.flash = 'please fill out the form'
     
     if  idDossier is not None:
-            # SI LE FORMULAIRE GESTION EST SOUMIS
+        # si le formulaire d'administration est soumis
         if formAdmin.accepts(request,session):
-               
+
+               # on recupere l'etat du dossier (avant l'update)
                etatAvantUpdate = projetService.getDossierById(idDossier).etat_dossier_id
                
+               # et on met a jour l'état et le commentaire du dossier
                projetService.updateStatusDossier(formAdmin.vars.commentaire, formAdmin.vars.idEtat, idDossier)
                idDoss = idDossier
                 
+               # et on notifie par mail demandeur, représentants de l'entité du dossier, et les présidents
                mailService.sendMail(idDoss,etatAvantUpdate,request)
                 
-                # INSERTION EN BASE
                response.flash = 'form accepted'
+                
+               #redirection vers la page courant
                redirect(URL('addProjet',vars=dict(idDossier=idDoss)))
-         # SI LE FORMULAIRE CONTIENT DES ERREURS
+
         elif formAdmin.errors:
-            # ON VA LES AFFICHER
            response.flash = 'form has errors'
         else:
-            # FORMULAIRE VIDE
            response.flash = 'please fill out the form'
+    
+    # id dossier null, donc pas de formulaire d'admin
     else:
-       formAdmin = None 
+       formAdmin = None
     
     return dict(form=form, formAdmin=formAdmin, entite=nomEntite, lecture=read, initDossier=initDemande, isPresident=isPresident, isRepresentant=isRepresentant, isDemandeur=isDemandeur,rowDossier=rowDossier,detailsProjetView=detailsProjetView, gestionProduitsView=gestionProduitsView, gestionPJsView=gestionPJsView, finalDemandeView=finalDemandeView, user=user, nameOfEntityUser=nameOfEntityUser, nameOfGroupUser=nameOfGroupUser)
 
-
+# page de finalisation de la demande
 @auth.requires_login()
 def finalisationDemande():
     
@@ -179,45 +221,55 @@ def finalisationDemande():
     gestionPJsView = False
     finalDemandeView = True
     
+    # id du dossier récuperé en paramètre depuis le requete http
     idDossier = request.vars.idDossier;
     
     if idDossier is not None:
 
+          #récupération du dossier à partir de son id
           rowDossier = projetService.getDossierById(idDossier)
         
+          # pas de parametre, on redirige vers la page listant les projets
           if rowDossier is None:
-                redirect(URL('default','index'))
+                redirect(URL('listeProjets','projets'))
 
-          rowPorteur = porteurService.getPorteurById(rowDossier.porteur_id)
-    
+          # on va tester si le user connecté est un président, représentant ou demandeur
           isRepresentant = groupService.isRepresentantOfDossier(session, rowDossier.entite_id)
           isPresident = session.auth.user.group_id == Constantes.PRESIDENT
           isDemandeur = rowDossier.user_id == session.auth.user.id
         
+          # user non connecté, redirection
           if isDemandeur == False and  isRepresentant == False and isPresident == False:
-              redirect(URL('default','index'))
-                
+              redirect(URL('listeProjets','projets'))
+           
+          # si le dossier n'est pas a l'état brouillon, on peut plus le soumettre
           if rowDossier.etat_dossier_id != Constantes.BROUILLON:
-              redirect(URL('default','index'))
-                                    
+              redirect(URL('listeProjets','projets'))
+
+          # initDossier : gère l'affichage en fonction de l'état du dossier (variable utilisée dans la vue)
           if rowDossier.etat_dossier_id is None or rowDossier.etat_dossier_id == Constantes.BROUILLON:
                 initDossier = True
           else:
                 initDossier = False
-     
+    
+    #création du formulaire contenant un bouton pour la soumission du dossier
     form = FORM(INPUT(_type='submit', _value="Soumettre"))
     
     changeState = False
-    
-    rowDos = projetService.getDossierById(idDossier)
-    
-    if(rowDos.etat_dossier_id == Constantes.SOUMIS):
+
+    # le dossier est à l'état soumis, changeState va prendre vrai pour modifier l'affichage dans la vue (affichage d'un message pour
+    # dire que le dossier a bien été soumis, et disparition du bouton soumettre)
+    if(rowDossier.etat_dossier_id == Constantes.SOUMIS):
         changeState = True;
     
+    # formulaire soumis pour la soumission du dossier
     if form.accepts(request,session):
+        
+        # mise à jour du dossier à l'état soumis
         projetService.updateEtat(Constantes.SOUMIS, idDossier)
         changeState = True;
         
+        # notification par mail
         mailService.sendMail(idDossier,None,request)
         
         response.flash = 'form accepted'

@@ -2,10 +2,14 @@
     
     <div id="logo">
         
-         <img src="{{=URL('static', 'images/logoCARI.png')}}" />
-        
+        <img src="{{=URL('static', 'images/logoCARI.png')}}" style="margin-top:8px;" />
+        <div style="margin-bottom: -85px;">
+            
+        </div>
         <div id="titre">
-            Conseil administratif des ressources informatiques
+            <div >
+                 Conseil administratif des ressources informatiques
+            </div>
         </div>
        
     </div>

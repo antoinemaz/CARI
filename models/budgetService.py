@@ -37,7 +37,7 @@ class budgetService(object):
     def getPercentValue(value, chiffres):
          return round(value, chiffres)
 
-    # récupération du dernier budget en date de chaque entité
+    # récupération des derniers budgets en date de chaque entité
     @staticmethod
     def getLastBudgets():
         newBudgets = db.executesql('SELECT * FROM budget b1 WHERE date_budget = (SELECT max(date_budget) FROM budget b2 WHERE b1.entite_id = b2.entite_id);', as_dict=True)

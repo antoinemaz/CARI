@@ -93,6 +93,8 @@ db.dossier.etat_dossier_id.label="Etat"
 db.dossier.mailResponsable.label='Email du responsable'
 db.dossier.mailGestionnaire.label='Email du gestionnaire'
 db.dossier.date_dossier.label='Date de création du dossier'
+db.dossier.etat_dossier_id.readable=True
+db.dossier.entite_id.readable=True
 
 # TABLE PRODUIT 
 db.define_table('achat',

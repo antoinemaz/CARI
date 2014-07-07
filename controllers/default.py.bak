@@ -1,3 +1,4 @@
+# entité et role du user en lecture seule
 userService.readonlyUser(True,False)
 
 # PAGE DE CONNEXION DES UTILISATEURS

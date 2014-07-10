@@ -67,6 +67,7 @@ def addProjet():
             #création de la liste déroulante contenant les états a changer pour le dossier
             # visible que par le representant/president
             options = {};
+            divSelectEtat = ""
             
             # dossier soumis > etats possible : accepté, refusé, ou en attente
             if(rowDossier.etat_dossier_id == Constantes.SOUMIS):

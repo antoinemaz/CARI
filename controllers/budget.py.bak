@@ -76,7 +76,7 @@ def gestionBudgets():
         response.view='test.csv'
         
         # on construit le nom du fichier (avec le date du jour)
-        filename = "export_budget_" + str(datetime.now()).replace(":", "") + '.csv'
+        filename = "export_budget_" + str(datetime.now()).replace(":", "") + '.xls'
         
         # et on retourne le nom du fichier et le flux de type string dans la vue de response.view (test.csv)
         return dict(filename=filename,stream=streamIO)

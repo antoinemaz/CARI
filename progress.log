@@ -5345,3 +5345,4 @@
 [2014-07-10 10:16:53] EDIT CARI/controllers/budget.py: 0
 [2014-07-10 10:18:05] EDIT CARI/views/test.csv: -3
 [2014-07-10 10:18:30] EDIT CARI/views/test.csv: 3
+[2014-07-12 14:02:42] EDIT CARI/models/MailService.py: -1

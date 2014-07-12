@@ -7,10 +7,9 @@ class mailService(object):
         from gluon.tools import Mail
         mail = Mail()
         mail = auth.settings.mailer
-        #mail.settings.server = 'gae'
         mail.settings.server = 'smtp.gmail.com:587'
-        mail.settings.sender = 'antoine.mazelin@gmail.com'
-        mail.settings.login = 'antoine.mazelin@gmail.com:monamour91'
+        mail.settings.sender = 'VOTREADRESSEMAIL@gmail.com'
+        mail.settings.login = 'VOTREADRESSEMAIL@gmail.com:VOTREPASSWORD'
         return mail
     
     # méthode qui permet d'envoyer des mails à chaque changement d'état de dossier et à chaque modification de commentaire 

@@ -17,6 +17,7 @@ class mailService(object):
     @staticmethod
     def sendMail(idDossier, etatAvantUpdate,request):
         
+        # obtention du dossier, demandeur et porteur du dossier
         dossier = projetService.getDossierById(idDossier)
         demandeur = userService.getInfosUser(dossier.user_id)
         porteur = porteurService.getPorteurById(dossier.porteur_id)
@@ -29,8 +30,11 @@ class mailService(object):
         
         finDePhrase = '\n\nLe numéro du dossier est le suivant : '+ str(dossier.id)+'.\nLe lien de la demande est le suivant : '+ str(request.env.http_host+"/"+request.application+"/projet/addProjet/")+''+'idDossier='+str(dossier.id)+'.'
         
+        # on teste si l'état avant le update du dossier est différent de l'état du dossier après l'update : si oui, il y a bien
+        # eu changement d'état, donc on va procéder aux notifications de mail
         if(etatAvantUpdate != dossier.etat_dossier_id):
             
+            # cas d'un dossier soumis
             if (dossier.etat_dossier_id == Constantes.SOUMIS):
                 
                 sujet = 'Soumission d\'une nouvelle demande'
@@ -42,6 +46,7 @@ class mailService(object):
                 # Message au président
                 msgPresident = 'Bonjour, \n\n Une demande a été soumise.'+finDePhrase
             
+            # cas d'un dossier accepté
             if (dossier.etat_dossier_id == Constantes.ACCEPTE):
                 
                 sujet = 'Dossier accepté'
@@ -52,7 +57,8 @@ class mailService(object):
                 msgResponsable = 'Bonjour, \n\Le dossier n°'+ str(dossier.id)+' a été acceptée.'+finDePhrase
                 # Message au président
                 msgPresident = 'Bonjour, \n\Le dossier n°'+ str(dossier.id)+' a été acceptée.'+finDePhrase
-                
+               
+             # cas d'un dossier refusé   
             if (dossier.etat_dossier_id == Constantes.REFUSE):
                 
                 sujet = 'Dossier refusée'
@@ -63,7 +69,8 @@ class mailService(object):
                 msgResponsable = 'Bonjour, \n\nLe dossier n°'+ str(dossier.id)+' a été refusé.'+finDePhrase
                 # Message au président
                 msgPresident = 'Bonjour, \n\nLe dossier n°'+ str(dossier.id)+' a été refusé.'+finDePhrase
-                
+             
+            # cas d'un dossier en attente   
             if (dossier.etat_dossier_id == Constantes.ATTENTE):
                 
                 sujet = 'Dossier en attente'
@@ -75,6 +82,7 @@ class mailService(object):
                 # Message au président
                 msgPresident = 'Bonjour, \n\Le dossier n°'+ str(dossier.id)+' a été mis en attente.'+finDePhrase
 
+        # pas de changement d'état : on notifie d'une modification de commentaire du dossier
         else:
             
             sujet = 'Commentaire modifié d\'un dossier'
@@ -85,16 +93,18 @@ class mailService(object):
             msgResponsable = 'Bonjour, \n\nLe commentaire du dossier n°'+ str(dossier.id)+' a été modifié.\n\nVoici le commentaire du dossier : \n\n'+dossier.commentaire+finDePhrase
             # Message au président
             msgPresident = 'Bonjour, \n\nLe commentaire du dossier n°'+ str(dossier.id)+' a été modifié.\n\nVoici le commentaire du dossier : \n\n'+dossier.commentaire+finDePhrase
-         
+        
+        
         mailSender = mailService.settingMail()
-         # Envoi des mails
+         # Envoi des mails au demandeur
         mailSender.send(to=[demandeur.email], cc=[str(porteur.mail)], subject=sujet,message=msgDemandeur)
+        #au responsable
         mailSender.send(to=[str(dossier.mailResponsable)], cc=[str(dossier.mailGestionnaire)], subject=sujet,message=msgResponsable)
+        # et à tous les présidents
         for pres in userService.getPresidents():
               mailSender.send(to=[pres.email], subject=sujet,message=msgPresident)
-                
-                
-                
+
+    # envoi de mails lorqu'un nouvel utilisateur est créé
     @staticmethod
     def sendMailNewUser(prenom, nom, email,mdp):
         
